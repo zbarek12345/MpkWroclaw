@@ -333,12 +333,92 @@ public class MpkDatabaseContext:DbContext
 
             entity.HasKey(a => a.stop_id);
         });
+
+        modelBuilder.Entity<MpkDataModels.Trips>(entity =>
+        {
+            entity.Property(a => a.route_id)
+                .HasColumnName("route_id")
+                .HasColumnType("integer");
+
+            entity.Property(a => a.service_id)
+                .HasColumnName("service_id")
+                .HasColumnType("integer");
+
+            entity.Property(a => a.trip_id)
+                .HasColumnName("trip_id")
+                .HasColumnType("varchar(64)");
+            
+            entity.Property(a => a.trip_headsign)
+                .HasColumnName("trip_headsign")
+                .HasColumnType("varchar(64)");
+            
+            entity.Property(a => a.direction_id)
+                .HasColumnName("direction_id")
+                .HasColumnType("integer");
+            
+            entity.Property(a => a.shape_id)
+                .HasColumnName("shape_id")
+                .HasColumnType("integer");
+            
+            entity.Property(a => a.brigade_id)
+                .HasColumnName("brigade_id")
+                .HasColumnType("integer");
+            
+            entity.Property(a => a.vehicle_id)
+                .HasColumnName("vehicle_id")
+                .HasColumnType("integer");
+            
+            entity.Property(a => a.variant_id)
+                .HasColumnName("variant_id")
+                .HasColumnType("integer");
+
+            entity.HasKey(a => a.trip_id);
+        });
         
-        modelBuilder.Entity<MpkDataModels.Trips>()
-            .HasKey(t => t.route_id);
-        modelBuilder.Entity<MpkDataModels.Variants>()
-            .HasKey(v => v.variant_id);
-        modelBuilder.Entity<MpkDataModels.Vehicle_Types>()
-            .HasKey(vt => vt.vehicle_type_id);
+        modelBuilder.Entity<MpkDataModels.Variants>(entity =>
+        {
+            entity.Property(a => a.variant_id)
+                .HasColumnName("variant_id")
+                .HasColumnType("integer");
+
+            entity.Property(a => a.is_main)
+                .HasColumnName("is_main")
+                .HasColumnType("boolean");
+
+            entity.Property(a => a.equiv_main_variant_id)
+                .HasColumnName("equiv_main_variant_id")
+                .HasColumnType("integer");
+            
+            entity.Property(a => a.join_stop_id)
+                .HasColumnName("join_stop_id")
+                .HasColumnType("integer");
+            
+            entity.Property(a => a.disjoin_stop_id)
+                .HasColumnName("disjoin_stop_id")
+                .HasColumnType("integer");
+            
+            entity.HasKey(a => a.variant_id);
+        });
+        
+        modelBuilder.Entity<MpkDataModels.Vehicle_Types>(entity =>
+        {
+            entity.Property(a => a.vehicle_type_id)
+                .HasColumnName("vehicle_type_id")
+                .HasColumnType("integer");
+
+            entity.Property(a => a.vehicle_type_name)
+                .HasColumnName("vehicle_type_name")
+                .HasColumnType("varchar(64)");
+
+            entity.Property(a => a.vehicle_type_description)
+                .HasColumnName("vehicle_type_description")
+                .HasColumnType("varchar(64)");
+            
+            entity.Property(a => a.vehicle_type_symbol)
+                .HasColumnName("vehicle_type_symbol")
+                .HasColumnType("varchar(64)");
+            
+            entity.HasKey(a => a.vehicle_type_id);
+        });
     }
 }

@@ -1,0 +1,6 @@
+@MPKWrocław_HostAddress = http://localhost:5262
+
+GET {{MPKWrocław_HostAddress}}/weatherforecast/
+Accept: application/json
+
+###

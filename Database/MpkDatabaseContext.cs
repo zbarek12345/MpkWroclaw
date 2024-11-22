@@ -24,7 +24,13 @@ public class MpkDatabaseContext:DbContext
 
     protected override void OnConfiguring(DbContextOptionsBuilder optionsBuilder)
     {
-        optionsBuilder.UseSqlite("Data Source=C:\\Users\\Wiktor\\RiderProjects\\MPKWrocław\\Database\\mpk.sqlite");
+        var cpath = Directory.GetCurrentDirectory();
+        if (!Directory.Exists(cpath + "/database")) ;
+            Directory.CreateDirectory(cpath + "/database");
+        cpath += "/database";
+        if (!File.Exists(cpath + "/mpk.sqlite"))
+            File.Create(cpath + "/mpk.sqlite");
+        optionsBuilder.UseSqlite($"Data Source={cpath}/mpk.sqlite");
     }
     
     protected override void OnModelCreating(ModelBuilder modelBuilder)

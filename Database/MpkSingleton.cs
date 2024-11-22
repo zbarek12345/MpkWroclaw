@@ -7,5 +7,11 @@ public class MpkSingleton
     {
         _databaseContext = databaseContext;
     }
+
+    public string[] vehiclesOnStop(int stop_id)
+    {
+        var vehicles = _databaseContext.Trips;
+        return null;
+    }
     
 }

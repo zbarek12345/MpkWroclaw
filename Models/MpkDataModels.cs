@@ -21,7 +21,7 @@ public class MpkDataModels
         {
             string s = value.ToString();
 
-            while (s.Length < value)
+            while (s.Length < desiredLength)
             {
                 s = '0' + s;
             }
@@ -62,7 +62,7 @@ public class MpkDataModels
         {
             string s = value.ToString();
 
-            while (s.Length < value)
+            while (s.Length < desiredLength)
             {
                 s = '0' + s;
             }

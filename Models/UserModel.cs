@@ -7,11 +7,13 @@ public class UserModel
     public string Username;
     public string Name;
     public string Password;
+    public string Email;
 }
 
 public class UserLogins
 {
     public Guid UserID;
+    public Guid Token;
     public string LogInDevice;
     public string LogInIp;
     public DateTime LogInDate;

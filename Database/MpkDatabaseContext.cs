@@ -24,7 +24,7 @@ public class MpkDatabaseContext:DbContext
 
     protected override void OnConfiguring(DbContextOptionsBuilder optionsBuilder)
     {
-        optionsBuilder.UseSqlite("jdbc:sqlite:Database/mpk.sqlite");
+        optionsBuilder.UseSqlite("Data Source=C:\\Users\\Wiktor\\RiderProjects\\MPKWrocław\\Database\\mpk.sqlite");
     }
     
     protected override void OnModelCreating(ModelBuilder modelBuilder)
@@ -95,11 +95,15 @@ public class MpkDatabaseContext:DbContext
             
             entity.Property(a => a.start_date)
                 .HasColumnName("start_date")
-                .HasColumnType("datetime");
+                .HasColumnType("varchar(32)")
+                .HasConversion(v=>v.ToString(),
+                    v=> MpkDataModels.Date.FromString(v));
             
             entity.Property(a => a.end_date)
                 .HasColumnName("end_date")
-                .HasColumnType("datetime");
+                .HasColumnType("varchar(32)")
+                .HasConversion(v=>v.ToString(),
+                    v=> MpkDataModels.Date.FromString(v));
 
             entity.HasKey(a => a.service_id);
         });
@@ -112,11 +116,15 @@ public class MpkDatabaseContext:DbContext
 
             entity.Property(a => a.date)
                 .HasColumnName("date")
-                .HasColumnType("datetime");
+                .HasColumnType("varchar(32)")
+                .HasConversion(v=>v.ToString(),
+                    v=> MpkDataModels.Date.FromString(v));;
             
             entity.Property(a => a.exception_type)
                 .HasColumnName("exception_type")
                 .HasColumnType("integer");
+
+            entity.HasNoKey();
         });
 
         modelBuilder.Entity<MpkDataModels.Contracts_Ext>(entity =>
@@ -127,15 +135,21 @@ public class MpkDatabaseContext:DbContext
 
             entity.Property(a => a.contract_conclusion_date)
                 .HasColumnName("contract_conclusion_date")
-                .HasColumnType("datetime");
+                .HasColumnType("varchar(32)")
+                .HasConversion(v=>v.ToString(),
+                    v=> MpkDataModels.Date.FromString(v));
 
             entity.Property(a => a.contract_start_date)
                 .HasColumnName("contract_start_date")
-                .HasColumnType("datetime");
+                .HasColumnType("varchar(32)")
+                .HasConversion(v=>v.ToString(),
+                    v=> MpkDataModels.Date.FromString(v));
             
             entity.Property(a => a.contract_end_date)
                 .HasColumnName("contract_end_date")
-                .HasColumnType("datetime");
+                .HasColumnType("varchar(32)")
+                .HasConversion(v=>v.ToString(),
+                    v=> MpkDataModels.Date.FromString(v));
             
             entity.Property(a => a.contract_number)
                 .HasColumnName("contract_number")
@@ -170,6 +184,8 @@ public class MpkDatabaseContext:DbContext
             entity.Property(a => a.stop_id)
                 .HasColumnName("stop_id")
                 .HasColumnType("integer");
+
+            entity.HasNoKey();
         });
 
         modelBuilder.Entity<MpkDataModels.Feed_Info>(entity =>
@@ -188,12 +204,17 @@ public class MpkDatabaseContext:DbContext
             
             entity.Property(a => a.feed_start_date)
                 .HasColumnName("feed_start_date")
-                .HasColumnType("datetime");
+                .HasColumnType("varchar(32)")
+                .HasConversion(v=>v.ToString(),
+                    v=> MpkDataModels.Date.FromString(v));
             
             entity.Property(a => a.feed_end_date)
                 .HasColumnName("feed_end_date")
-                .HasColumnType("datetime");
-            
+                .HasColumnType("varchar(32)")
+                .HasConversion(v=>v.ToString(),
+                    v=> MpkDataModels.Date.FromString(v));
+
+            entity.HasNoKey();
         });
 
         modelBuilder.Entity<MpkDataModels.Route_Types>(entity =>
@@ -241,11 +262,15 @@ public class MpkDatabaseContext:DbContext
             
             entity.Property(a => a.valid_from)
                 .HasColumnName("valid_from")
-                .HasColumnType("datetime");
+                .HasColumnType("varchar(32)")
+                .HasConversion(v=>v.ToString(),
+                    v=> MpkDataModels.Date.FromString(v));
             
             entity.Property(a => a.valid_until)
                 .HasColumnName("valid_until")
-                .HasColumnType("datetime");
+                .HasColumnType("varchar(32)")
+                .HasConversion(v=>v.ToString(),
+                    v=> MpkDataModels.Date.FromString(v));
 
             entity.HasKey(a => a.route_id);
 
@@ -280,11 +305,15 @@ public class MpkDatabaseContext:DbContext
 
             entity.Property(a => a.arrival_time)
                 .HasColumnName("arrival_time")
-                .HasColumnType("varchar(32)");
+                .HasColumnType("varchar(32)")
+                .HasConversion(v=>v.ToString(),
+                    v=> MpkDataModels.Hour.FromString(v));
 
             entity.Property(a => a.departure_time)
                 .HasColumnName("departure_time")
-                .HasColumnType("varchar(32)");
+                .HasColumnType("varchar(32)")
+                .HasConversion(v=>v.ToString(),
+                    v=> MpkDataModels.Hour.FromString(v));
 
             entity.Property(a => a.stop_id)
                 .HasColumnName("stop_id")

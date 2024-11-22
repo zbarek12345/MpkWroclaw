@@ -124,7 +124,7 @@ public class MpkDatabaseContext:DbContext
                 .HasColumnName("exception_type")
                 .HasColumnType("integer");
 
-            entity.HasNoKey();
+            entity.HasKey(e => new {e.service_id, e.exception_type, e.date});
         });
 
         modelBuilder.Entity<MpkDataModels.Contracts_Ext>(entity =>
@@ -184,8 +184,9 @@ public class MpkDatabaseContext:DbContext
             entity.Property(a => a.stop_id)
                 .HasColumnName("stop_id")
                 .HasColumnType("integer");
-
-            entity.HasNoKey();
+            
+           
+            entity.HasKey(e => new { e.stop_id, e.variant_id });
         });
 
         modelBuilder.Entity<MpkDataModels.Feed_Info>(entity =>
@@ -214,7 +215,7 @@ public class MpkDatabaseContext:DbContext
                 .HasConversion(v=>v.ToString(),
                     v=> MpkDataModels.Date.FromString(v));
 
-            entity.HasNoKey();
+            entity.HasKey(e => e.feed_publisher_url);
         });
 
         modelBuilder.Entity<MpkDataModels.Route_Types>(entity =>
@@ -234,7 +235,7 @@ public class MpkDatabaseContext:DbContext
         {
             entity.Property(a => a.route_id)
                 .HasColumnName("route_id")
-                .HasColumnType("integer");
+                .HasColumnType("varchar(5)");
             
             entity.Property(a => a.agency_id)
                 .HasColumnName("agency_id")
@@ -294,14 +295,14 @@ public class MpkDatabaseContext:DbContext
                 .HasColumnName("shape_pt_sequence")
                 .HasColumnType("integer");
 
-            entity.HasKey(a => a.shape_id);
+            entity.HasKey(a => new { a.shape_id, a.shape_pt_sequence});
         });
         
         modelBuilder.Entity<MpkDataModels.Stop_Times>(entity =>
         {
             entity.Property(a => a.trip_id)
                 .HasColumnName("trip_id")
-                .HasColumnType("integer");
+                .HasColumnType("varchar(16)");
 
             entity.Property(a => a.arrival_time)
                 .HasColumnName("arrival_time")
@@ -331,7 +332,7 @@ public class MpkDatabaseContext:DbContext
                 .HasColumnName("drop_off_type")
                 .HasColumnType("integer");
             
-            entity.HasKey(a => a.trip_id);
+            entity.HasKey(a => new {a.trip_id, a.stop_sequence});
         });
 
         modelBuilder.Entity<MpkDataModels.Stops>(entity =>
@@ -346,10 +347,6 @@ public class MpkDatabaseContext:DbContext
 
             entity.Property(a => a.stop_name)
                 .HasColumnName("stop_name")
-                .HasColumnType("varchar(64)");
-            
-            entity.Property(a => a.stop_desc)
-                .HasColumnName("stop_desc")
                 .HasColumnType("varchar(64)");
             
             entity.Property(a => a.stop_lat)
@@ -367,15 +364,15 @@ public class MpkDatabaseContext:DbContext
         {
             entity.Property(a => a.route_id)
                 .HasColumnName("route_id")
-                .HasColumnType("integer");
+                .HasColumnType("varchar(5)");
 
             entity.Property(a => a.service_id)
                 .HasColumnName("service_id")
-                .HasColumnType("integer");
+                .HasColumnType("varchar(16)");
 
             entity.Property(a => a.trip_id)
                 .HasColumnName("trip_id")
-                .HasColumnType("integer");
+                .HasColumnType("varchar(16)");
             
             entity.Property(a => a.trip_headsign)
                 .HasColumnName("trip_headsign")
@@ -416,15 +413,15 @@ public class MpkDatabaseContext:DbContext
 
             entity.Property(a => a.equiv_main_variant_id)
                 .HasColumnName("equiv_main_variant_id")
-                .HasColumnType("integer");
+                .HasColumnType("varchar(16)");
             
             entity.Property(a => a.join_stop_id)
                 .HasColumnName("join_stop_id")
-                .HasColumnType("integer");
+                .HasColumnType("varchar(16)");
             
             entity.Property(a => a.disjoin_stop_id)
                 .HasColumnName("disjoin_stop_id")
-                .HasColumnType("integer");
+                .HasColumnType("varchar(16)");
             
             entity.HasKey(a => a.variant_id);
         });

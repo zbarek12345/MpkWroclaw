@@ -38,7 +38,7 @@ public class Reader
 
             for (int i = 0; i < fields.Length && i < data.Length; i++)
             {
-                data[i].Replace("\"", "");
+                data[i] = data[i].Replace("\"", "");
                 var property = fields[i];
                 Object convertedValue = null;
                 if (property.FieldType == typeof(MpkDataModels.Date))
@@ -49,6 +49,11 @@ public class Reader
                 else if (property.FieldType == typeof(MpkDataModels.Hour))
                 {
                     convertedValue = MpkDataModels.Hour.FromString(data[i]);
+                    property.SetValue(instance, convertedValue);
+                }
+                else if (property.FieldType == typeof(Boolean))
+                {
+                    convertedValue = data[i] != "0";
                     property.SetValue(instance, convertedValue);
                 }
                 else
@@ -69,17 +74,17 @@ public class Reader
     }
     Reader(MpkDatabaseContext dbContext)
     {   
-        
         dbContext.Database.EnsureCreated();
         _context = dbContext;
             
+        #region working
         Object allRecords = _context.Agencies.ToList();
         _context.Agencies.RemoveRange( (List<MpkDataModels.Agency>)allRecords);
         foreach (var agency in ReadData<MpkDataModels.Agency>(_localString+"agency.txt"))
         {
             dbContext.Agencies.Add(agency);
         }
-
+        
         dbContext.SaveChanges();
         
         allRecords = _context.Calendars.ToList();
@@ -88,7 +93,7 @@ public class Reader
         {
             dbContext.Calendars.Add(calendar);
         }
-
+        
         dbContext.SaveChanges();
         
         allRecords = _context.CalendarDatesEnumerable.ToList();
@@ -97,7 +102,7 @@ public class Reader
         {
             dbContext.CalendarDatesEnumerable.Add(calendar_dates);
         }
-
+        
         dbContext.SaveChanges();
         
         allRecords = _context.ContractsExts.ToList();
@@ -106,7 +111,7 @@ public class Reader
         {
             dbContext.ContractsExts.Add(contractsExt);
         }
-
+        
         dbContext.SaveChanges();
         
         allRecords = _context.ControlStops.ToList();
@@ -115,7 +120,7 @@ public class Reader
         {
             dbContext.ControlStops.Add(control_stop);
         }
-
+        
         dbContext.SaveChanges();
         
         allRecords = _context.FeedInfos.ToList();
@@ -124,7 +129,7 @@ public class Reader
         {
             dbContext.FeedInfos.Add(feed_info);
         }
-
+        
         dbContext.SaveChanges();
         
         allRecords = _context.RouteTypes.ToList();
@@ -133,7 +138,7 @@ public class Reader
         {
             dbContext.RouteTypes.Add(route_type);
         }
-
+        
         dbContext.SaveChanges();
         
         allRecords = _context.Routes.ToList();
@@ -142,7 +147,7 @@ public class Reader
         {
             dbContext.Routes.Add(route);
         }
-
+        
         dbContext.SaveChanges();
         
         allRecords = _context.Shapes.ToList();
@@ -151,7 +156,7 @@ public class Reader
         {
             dbContext.Shapes.Add(shape);
         }
-
+        
         dbContext.SaveChanges();
         
         allRecords = _context.StopTimes.ToList();
@@ -160,8 +165,10 @@ public class Reader
         {
             dbContext.StopTimes.Add(stop_time);
         }
-
+        
         dbContext.SaveChanges();
+        
+        #endregion
         
         allRecords = _context.Stops.ToList();
         _context.Stops.RemoveRange( (List<MpkDataModels.Stops>)allRecords);

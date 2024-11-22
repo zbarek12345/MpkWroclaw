@@ -308,27 +308,27 @@ public class MpkDatabaseContext:DbContext
         modelBuilder.Entity<MpkDataModels.Stops>(entity =>
         {
             entity.Property(a => a.stop_id)
-                .HasColumnName("trip_id")
+                .HasColumnName("stop_id")
                 .HasColumnType("integer");
 
             entity.Property(a => a.stop_code)
-                .HasColumnName("arrival_time")
+                .HasColumnName("stop_code")
                 .HasColumnType("varchar(32)");
 
             entity.Property(a => a.stop_name)
-                .HasColumnName("departure_time")
+                .HasColumnName("stop_name")
                 .HasColumnType("varchar(64)");
             
             entity.Property(a => a.stop_desc)
-                .HasColumnName("departure_time")
+                .HasColumnName("stop_desc")
                 .HasColumnType("varchar(64)");
             
             entity.Property(a => a.stop_lat)
-                .HasColumnName("departure_time")
+                .HasColumnName("stop_lat")
                 .HasColumnType("varchar(64)");
             
             entity.Property(a => a.stop_lon)
-                .HasColumnName("departure_time")
+                .HasColumnName("stop_lon")
                 .HasColumnType("varchar(64)");
 
             entity.HasKey(a => a.stop_id);
@@ -346,7 +346,7 @@ public class MpkDatabaseContext:DbContext
 
             entity.Property(a => a.trip_id)
                 .HasColumnName("trip_id")
-                .HasColumnType("varchar(64)");
+                .HasColumnType("integer");
             
             entity.Property(a => a.trip_headsign)
                 .HasColumnName("trip_headsign")

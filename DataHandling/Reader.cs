@@ -47,7 +47,7 @@ public class Reader
 
             for (int i = 0; i < fields.Length && i < data.Length; i++)
             {
-                data[i] = data[i].Replace("\"", "");
+                data[i] = data[i].Replace("\"", "").Replace("\r", "");
                 var property = fields[i];
                 Object convertedValue = null;
                 if (property.FieldType == typeof(MpkDataModels.Date))
@@ -181,7 +181,6 @@ public class Reader
         
         dbContext.SaveChanges();
         
-        #endregion
         
         allRecords = _context.Stops.ToList();
         _context.Stops.RemoveRange( (List<MpkDataModels.Stops>)allRecords);
@@ -218,6 +217,8 @@ public class Reader
         }
 
         dbContext.SaveChanges();
+        
+        #endregion
         
     }
     

@@ -1,6 +1,5 @@
-﻿using System.Data.Entity;
+﻿using System.IO.Compression;
 using System.Reflection;
-using Microsoft.EntityFrameworkCore;
 using MPKWrocław.Database;
 using MPKWrocław.Models;
 
@@ -10,12 +9,22 @@ namespace MPKWrocław.DataHandling;
 public class Reader
 {
     private bool _updateLock = false;
-    private static string _localString = "C:\\Users\\Wiktor\\RiderProjects\\MPKWrocław\\DataHandling\\OtwartyWroclaw_rozklad_jazdy_GTFS\\";
+    private static string _tmp = Directory.GetCurrentDirectory()+"\\tmp";
+    private static string _localString = _tmp+"\\OtwartyWroclaw_rozklad_jazdy_GTFS";
     private MpkDatabaseContext _context;
     public void DownloadSource()
     {
         Uri mpkUrl= new Uri(
             "https://www.wroclaw.pl/open-data/87b09b32-f076-4475-8ec9-6020ed1f9ac0/OtwartyWroclaw_rozklad_jazdy_GTFS.zip");
+
+        HttpClient httpClient = new HttpClient();
+
+        var stream = httpClient.GetStreamAsync(mpkUrl).GetAwaiter().GetResult();
+
+        var archive = new ZipArchive(stream);
+        
+        archive.ExtractToDirectory(_localString);
+
     }
 
     public List<T> ReadData<T>(string filePath) where T : new()
@@ -74,13 +83,17 @@ public class Reader
     }
     Reader(MpkDatabaseContext dbContext)
     {   
+        
+        if(!Directory.Exists(_localString) || (DateTime.Now - Directory.GetCreationTime(_localString)).Days>1)
+            DownloadSource();
+        
         dbContext.Database.EnsureCreated();
         _context = dbContext;
             
         #region working
         Object allRecords = _context.Agencies.ToList();
         _context.Agencies.RemoveRange( (List<MpkDataModels.Agency>)allRecords);
-        foreach (var agency in ReadData<MpkDataModels.Agency>(_localString+"agency.txt"))
+        foreach (var agency in ReadData<MpkDataModels.Agency>(_localString+"\\agency.txt"))
         {
             dbContext.Agencies.Add(agency);
         }
@@ -89,7 +102,7 @@ public class Reader
         
         allRecords = _context.Calendars.ToList();
         _context.Calendars.RemoveRange( (List<MpkDataModels.Calendar>)allRecords);
-        foreach (var calendar in ReadData<MpkDataModels.Calendar>(_localString+"calendar.txt"))
+        foreach (var calendar in ReadData<MpkDataModels.Calendar>(_localString+"\\calendar.txt"))
         {
             dbContext.Calendars.Add(calendar);
         }
@@ -98,7 +111,7 @@ public class Reader
         
         allRecords = _context.CalendarDatesEnumerable.ToList();
         _context.CalendarDatesEnumerable.RemoveRange( (List<MpkDataModels.Calendar_Dates>)allRecords);
-        foreach (var calendar_dates in ReadData<MpkDataModels.Calendar_Dates>(_localString+"calendar_dates.txt"))
+        foreach (var calendar_dates in ReadData<MpkDataModels.Calendar_Dates>(_localString+"\\calendar_dates.txt"))
         {
             dbContext.CalendarDatesEnumerable.Add(calendar_dates);
         }
@@ -107,7 +120,7 @@ public class Reader
         
         allRecords = _context.ContractsExts.ToList();
         _context.ContractsExts.RemoveRange( (List<MpkDataModels.Contracts_Ext>)allRecords);
-        foreach (var contractsExt in ReadData<MpkDataModels.Contracts_Ext>(_localString+"contracts_ext.txt"))
+        foreach (var contractsExt in ReadData<MpkDataModels.Contracts_Ext>(_localString+"\\contracts_ext.txt"))
         {
             dbContext.ContractsExts.Add(contractsExt);
         }
@@ -116,7 +129,7 @@ public class Reader
         
         allRecords = _context.ControlStops.ToList();
         _context.ControlStops.RemoveRange( (List<MpkDataModels.Control_Stops>)allRecords);
-        foreach (var control_stop in ReadData<MpkDataModels.Control_Stops>(_localString + "control_stops.txt"))
+        foreach (var control_stop in ReadData<MpkDataModels.Control_Stops>(_localString + "\\control_stops.txt"))
         {
             dbContext.ControlStops.Add(control_stop);
         }
@@ -125,7 +138,7 @@ public class Reader
         
         allRecords = _context.FeedInfos.ToList();
         _context.FeedInfos.RemoveRange( (List<MpkDataModels.Feed_Info>)allRecords);
-        foreach (var feed_info in ReadData<MpkDataModels.Feed_Info>(_localString + "feed_info.txt"))
+        foreach (var feed_info in ReadData<MpkDataModels.Feed_Info>(_localString + "\\feed_info.txt"))
         {
             dbContext.FeedInfos.Add(feed_info);
         }
@@ -134,7 +147,7 @@ public class Reader
         
         allRecords = _context.RouteTypes.ToList();
         _context.RouteTypes.RemoveRange( (List<MpkDataModels.Route_Types>)allRecords);
-        foreach (var route_type in ReadData<MpkDataModels.Route_Types>(_localString + "route_types.txt"))
+        foreach (var route_type in ReadData<MpkDataModels.Route_Types>(_localString + "\\route_types.txt"))
         {
             dbContext.RouteTypes.Add(route_type);
         }
@@ -143,7 +156,7 @@ public class Reader
         
         allRecords = _context.Routes.ToList();
         _context.Routes.RemoveRange( (List<MpkDataModels.Routes>)allRecords);
-        foreach (var route in ReadData<MpkDataModels.Routes>(_localString + "routes.txt"))
+        foreach (var route in ReadData<MpkDataModels.Routes>(_localString + "\\routes.txt"))
         {
             dbContext.Routes.Add(route);
         }
@@ -152,7 +165,7 @@ public class Reader
         
         allRecords = _context.Shapes.ToList();
         _context.Shapes.RemoveRange( (List<MpkDataModels.Shapes>)allRecords);
-        foreach (var shape in ReadData<MpkDataModels.Shapes>(_localString + "shapes.txt"))
+        foreach (var shape in ReadData<MpkDataModels.Shapes>(_localString + "\\shapes.txt"))
         {
             dbContext.Shapes.Add(shape);
         }
@@ -161,7 +174,7 @@ public class Reader
         
         allRecords = _context.StopTimes.ToList();
         _context.StopTimes.RemoveRange( (List<MpkDataModels.Stop_Times>)allRecords);
-        foreach (var stop_time in ReadData<MpkDataModels.Stop_Times>(_localString + "stop_times.txt"))
+        foreach (var stop_time in ReadData<MpkDataModels.Stop_Times>(_localString + "\\stop_times.txt"))
         {
             dbContext.StopTimes.Add(stop_time);
         }
@@ -172,7 +185,7 @@ public class Reader
         
         allRecords = _context.Stops.ToList();
         _context.Stops.RemoveRange( (List<MpkDataModels.Stops>)allRecords);
-        foreach (var stop in ReadData<MpkDataModels.Stops>(_localString + "stops.txt"))
+        foreach (var stop in ReadData<MpkDataModels.Stops>(_localString + "\\stops.txt"))
         {
             dbContext.Stops.Add(stop);
         }
@@ -181,7 +194,7 @@ public class Reader
         
         allRecords = _context.Trips.ToList();
         _context.Trips.RemoveRange( (List<MpkDataModels.Trips>)allRecords);
-        foreach (var trip in ReadData<MpkDataModels.Trips>(_localString + "trips.txt"))
+        foreach (var trip in ReadData<MpkDataModels.Trips>(_localString + "\\trips.txt"))
         {
             dbContext.Trips.Add(trip);
         }
@@ -190,7 +203,7 @@ public class Reader
         
         allRecords = _context.Variants.ToList();
         _context.Variants.RemoveRange( (List<MpkDataModels.Variants>)allRecords);
-        foreach (var variant in ReadData<MpkDataModels.Variants>(_localString + "variants.txt"))
+        foreach (var variant in ReadData<MpkDataModels.Variants>(_localString + "\\variants.txt"))
         {
             dbContext.Variants.Add(variant);
         }
@@ -199,7 +212,7 @@ public class Reader
     
         allRecords = _context.VehicleTypes.ToList();
         _context.VehicleTypes.RemoveRange( (List<MpkDataModels.Vehicle_Types>)allRecords);
-        foreach (var vehicle_type in ReadData<MpkDataModels.Vehicle_Types>(_localString + "vehicle_types.txt"))
+        foreach (var vehicle_type in ReadData<MpkDataModels.Vehicle_Types>(_localString + "\\vehicle_types.txt"))
         {
             dbContext.VehicleTypes.Add(vehicle_type);
         }
@@ -214,6 +227,5 @@ public class Reader
     public static void Main()
     {
         Reader r = new Reader(new MpkDatabaseContext());
-        
     }
 }

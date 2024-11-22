@@ -17,9 +17,20 @@ public class MpkDataModels
             return new Hour { Hours = hour, Minutes = minute, Seconds = second };
         }
 
+        public static string fillZeroes(int value, int desiredLength)
+        {
+            string s = value.ToString();
+
+            while (s.Length < value)
+            {
+                s = '0' + s;
+            }
+            return s;
+        }
+        
         public override string ToString()
         {
-            return Hours + ":" + Minutes + ":" + Seconds;
+            return fillZeroes(Hours, 2) + ":" + fillZeroes(Minutes, 2) + ":" + fillZeroes(Seconds, 2);
         }
     }
 
@@ -47,9 +58,20 @@ public class MpkDataModels
             return new Date { Year = year, Month = month, Day = day };
         }
         
+        public static string fillZeroes(int value, int desiredLength)
+        {
+            string s = value.ToString();
+
+            while (s.Length < value)
+            {
+                s = '0' + s;
+            }
+            return s;
+        }
+        
         public override string ToString()
         {
-            return Year +""+ Month +""+ Day;
+            return fillZeroes(Year,4) + fillZeroes(Month,2) +fillZeroes(Day,2);
         }
         
     }

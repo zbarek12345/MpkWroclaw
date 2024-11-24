@@ -86,7 +86,7 @@ public class Reader
         
         if(!Directory.Exists(_localString) || (DateTime.Now - Directory.GetCreationTime(_localString)).Days>1)
             DownloadSource();
-        
+        // dbContext.Database.EnsureDeleted();
         dbContext.Database.EnsureCreated();
         _context = dbContext;
             

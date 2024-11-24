@@ -131,6 +131,10 @@ public class MpkDatabaseContext:DbContext
                 .HasColumnType("integer");
 
             entity.HasKey(e => new {e.service_id, e.exception_type, e.date});
+
+            entity.HasOne(e => e.Calendar) // Calendar_Dates ma jeden Calendar
+                .WithMany(c => c.CalendarDates) // Calendar ma wiele CalendarDates
+                .HasForeignKey(e => e.service_id); // Klucz obcy wskazuje na service_id w Calendar
         });
 
         modelBuilder.Entity<MpkDataModels.Contracts_Ext>(entity =>
@@ -185,7 +189,7 @@ public class MpkDatabaseContext:DbContext
         {
             entity.Property(a => a.variant_id)
                 .HasColumnName("variant_id")
-                .HasColumnType("integer");
+                .HasColumnType("varchar(16)");
             
             entity.Property(a => a.stop_id)
                 .HasColumnName("stop_id")
@@ -281,13 +285,23 @@ public class MpkDatabaseContext:DbContext
 
             entity.HasKey(a => a.route_id);
 
+            // Relacja Many-to-One z Agency (Z tego samego agency_id mogą pochodzić różne trasy)
+            entity.HasOne(a => a.Agency)
+                .WithMany(c => c.Routes)
+                .HasForeignKey(a => a.agency_id);
+
+            // Relacja One-to-One z Route_Types
+            entity.HasOne<MpkDataModels.Route_Types>(a => a.RouteTypes)   // Określenie typu dla Route_Types
+                .WithOne(c => c.Routes)   // Określenie, że `Route_Types` ma jedno `Routes`
+                .HasForeignKey<MpkDataModels.Routes>(a => a.route_type2_id);  // Określenie, że `route_type2_id` jest kluczem obcym
+            
         });
 
         modelBuilder.Entity<MpkDataModels.Shapes>(entity =>
         {
             entity.Property(a => a.shape_id)
                 .HasColumnName("shape_id")
-                .HasColumnType("integer");
+                .HasColumnType("varchar(16)");
 
             entity.Property(a => a.shape_pt_lat)
                 .HasColumnName("shape_pt_lat")
@@ -302,6 +316,7 @@ public class MpkDatabaseContext:DbContext
                 .HasColumnType("integer");
 
             entity.HasKey(a => new { a.shape_id, a.shape_pt_sequence});
+            
         });
         
         modelBuilder.Entity<MpkDataModels.Stop_Times>(entity =>
@@ -339,6 +354,11 @@ public class MpkDatabaseContext:DbContext
                 .HasColumnType("integer");
             
             entity.HasKey(a => new {a.trip_id, a.stop_sequence});
+
+            // Definiowanie relacji One-to-Many
+            entity.HasOne(a => a.Stops)
+                .WithMany(s => s.StopTimes)
+                .HasForeignKey(a => a.stop_id);  // Określamy, że stop_id w Stop_Times jest kluczem obcym do tabeli Stops
         });
 
         modelBuilder.Entity<MpkDataModels.Stops>(entity =>
@@ -374,7 +394,7 @@ public class MpkDatabaseContext:DbContext
 
             entity.Property(a => a.service_id)
                 .HasColumnName("service_id")
-                .HasColumnType("varchar(16)");
+                .HasColumnType("integer");
 
             entity.Property(a => a.trip_id)
                 .HasColumnName("trip_id")
@@ -390,7 +410,7 @@ public class MpkDatabaseContext:DbContext
             
             entity.Property(a => a.shape_id)
                 .HasColumnName("shape_id")
-                .HasColumnType("integer");
+                .HasColumnType("varchar(16)");
             
             entity.Property(a => a.brigade_id)
                 .HasColumnName("brigade_id")
@@ -402,16 +422,39 @@ public class MpkDatabaseContext:DbContext
             
             entity.Property(a => a.variant_id)
                 .HasColumnName("variant_id")
-                .HasColumnType("integer");
+                .HasColumnType("varchar(16)");
 
             entity.HasKey(a => a.trip_id);
+            
+            // Relacja One-to-One z Routes
+            entity.HasOne(a => a.Routes)  // Trips ma odniesienie do Routes
+                .WithOne(s => s.Trips)  // Routes ma odniesienie do Trips
+                .HasForeignKey<MpkDataModels.Trips>(a => a.route_id);  // Określamy klucz obcy w Trips
+
+            // Relacja One-to-One z Calendar
+            entity.HasOne(a => a.Calendar)  // Trips ma odniesienie do Calendar
+                .WithOne(s => s.Trips)  // Calendar ma odniesienie do Trips
+                .HasForeignKey<MpkDataModels.Trips>(a => a.service_id);  // Określamy klucz obcy w Trips
+            
+            entity.HasMany(a => a.StopTimes)  // Trips ma wiele powiązanych StopTimes
+                .WithOne(s => s.Trips)  // StopTimes odnosi się do jednego Trips
+                .HasForeignKey(a => a.trip_id);  // Określamy klucz obcy w Trips
+            
+            entity.HasMany(a => a.Shapes)  // Trips ma wiele powiązanych Shapes
+                .WithOne(s => s.Trips)  // StopTimes odnosi się do jednego Trips
+                .HasForeignKey(a => a.shape_id);  // Określamy klucz obcy w Trips
+            
+            entity.HasMany(a => a.Variants)  // Trips ma wiele powiązanych Variants
+                .WithOne(s => s.Trips)  // StopTimes odnosi się do jednego Trips
+                .HasForeignKey(a => a.variant_id);  // Określamy klucz obcy w Trips
+            
         });
         
         modelBuilder.Entity<MpkDataModels.Variants>(entity =>
         {
             entity.Property(a => a.variant_id)
                 .HasColumnName("variant_id")
-                .HasColumnType("integer");
+                .HasColumnType("varchar(16)");
 
             entity.Property(a => a.is_main)
                 .HasColumnName("is_main")

@@ -83,6 +83,8 @@ public class MpkDataModels
         public string agency_phone;
         public string agency_timezone;
         public string agency_url;
+        
+        public ICollection<Routes> Routes { get; set; }
     }
 
     public class Calendar
@@ -97,13 +99,18 @@ public class MpkDataModels
         public int sunday;
         public Date start_date;
         public Date end_date;
+        
+        public ICollection<Calendar_Dates> CalendarDates { get; set; }
+        public Trips Trips { get; set; }
     }
 
     public class Calendar_Dates
     {
         public Date date;
         public int exception_type;
-        public string service_id;
+        public int service_id;
+        
+        public Calendar Calendar { get; set; }
     }
 
     public class Contracts_Ext
@@ -122,7 +129,7 @@ public class MpkDataModels
     public class Control_Stops
     {
         public int stop_id;
-        public int variant_id;
+        public string variant_id;
     }
 
     public class Feed_Info
@@ -139,6 +146,8 @@ public class MpkDataModels
     {
         public int route_type2_id;
         public string route_type2_name;
+
+        public Routes Routes { get; set; }
     }
 
     public class Routes
@@ -152,14 +161,20 @@ public class MpkDataModels
         public int route_type2_id;
         public Date valid_from;
         public Date valid_until;
+
+        public Agency Agency { get; set; }
+        public Route_Types RouteTypes { get; set; }
+        public Trips Trips { get; set; }
     }
 
     public class Shapes
     {
-        public int shape_id;
+        public string shape_id;
         public string shape_pt_lat;
         public string shape_pt_lon;
         public int shape_pt_sequence;
+        
+        public Trips Trips { get; set; }
     }
 
     public class Stop_Times
@@ -172,6 +187,8 @@ public class MpkDataModels
         public int pickup_type;
         public int drop_off_type;
         
+        public Stops Stops { get; set; }
+        public Trips Trips { get; set; }
     }
 
     public class Stops
@@ -182,29 +199,38 @@ public class MpkDataModels
         public string stop_lat;
         public string stop_lon;
         
+        public ICollection<Stop_Times> StopTimes { get; set; }
+        
     }
 
     public class Trips
     {   
         public string route_id;
-        public string service_id;
+        public int service_id;
         public string trip_id;
         public string trip_headsign;
         public int direction_id;
         public int shape_id;
         public int brigade_id;
         public int vehicle_id;
-        public int variant_id;
+        public string variant_id;
        
+        public Routes Routes { get; set; }
+        public Calendar Calendar { get; set; }
+        public ICollection<Stop_Times> StopTimes { get; set; }
+        public ICollection<Shapes> Shapes { get; set; }
+        public ICollection<Variants> Variants { get; set; }
     }
 
     public class Variants
     {
-        public int variant_id;
+        public string variant_id;
         public bool is_main;
         public string equiv_main_variant_id;
         public string join_stop_id;
         public string disjoin_stop_id;
+        
+        public Trips Trips { get; set; }
     }
 
     public class Vehicle_Types

@@ -17,6 +17,70 @@ public class MpkDataModels
             return new Hour { Hours = hour, Minutes = minute, Seconds = second };
         }
 
+        public static Hour Now()
+        {
+            var time = DateTime.Now;
+            return new Hour
+            {
+                Hours = time.Hour,
+                Minutes = time.Minute,
+                Seconds = time.Second
+            };
+        }
+
+        #region Arithmetic Operators
+        
+        public static bool operator<(Hour a, Hour b)
+        {
+            // Comparison prioritizes hours, then minutes, then seconds
+            if (a.Hours > b.Hours)
+                return true;
+            if (a.Hours == b.Hours && a.Minutes > b.Minutes)
+                return true;
+            if (a.Hours == b.Hours && a.Minutes == b.Minutes && a.Seconds > b.Seconds)
+                return true;
+
+            return false;
+        }
+        
+        public static bool operator>(Hour a, Hour b)
+        {
+            // Comparison prioritizes hours, then minutes, then seconds
+            if (a.Hours < b.Hours)
+                return true;
+            if (a.Hours == b.Hours && a.Minutes < b.Minutes)
+                return true;
+            if (a.Hours == b.Hours && a.Minutes == b.Minutes && a.Seconds < b.Seconds)
+                return true;
+
+            return false;
+        }
+        
+        public static bool operator ==(Hour a, Hour b)
+        {
+            if (ReferenceEquals(a, b)) return true; // Both are null or same instance
+            if (ReferenceEquals(a, null) || ReferenceEquals(b, null)) return false; // One is null
+            // Compare actual properties
+            return a.Minutes == b.Minutes && a.Hours == a.Hours && a.Seconds == a.Seconds; // Adjust based on your properties
+        }
+
+        public static bool operator !=(Hour a, Hour b)
+        {
+            return !(a == b); // Use the equality operator
+        }
+
+        public static bool operator >=(Hour a, Hour b)
+        {
+            return a > b || a == b;
+        }
+        
+        public static bool operator <=(Hour a, Hour b)
+        {
+            return a < b || a == b;
+        }
+
+        
+        #endregion
         public static string fillZeroes(int value, int desiredLength)
         {
             string s = value.ToString();
@@ -99,9 +163,32 @@ public class MpkDataModels
         public int sunday;
         public Date start_date;
         public Date end_date;
+        public bool availableToday()
+        {
+            var day = DateTime.Now.DayOfWeek;
+
+            switch (day)
+            {
+                case DayOfWeek.Monday:
+                    return monday == 1;
+                case DayOfWeek.Tuesday:
+                    return tuesday == 1;
+                case DayOfWeek.Wednesday:
+                    return wednesday == 1;
+                case DayOfWeek.Thursday:
+                    return thursday == 1;
+                case DayOfWeek.Friday:
+                    return friday == 1;
+                case DayOfWeek.Saturday:
+                    return saturday == 1;
+                case DayOfWeek.Sunday:
+                    return sunday == 1;
+            }
+            return false;
+        }
         
         public ICollection<Calendar_Dates> CalendarDates { get; set; }
-        public Trips Trips { get; set; }
+        public ICollection<Trips> Trips { get; set; }
     }
 
     public class Calendar_Dates
@@ -128,8 +215,8 @@ public class MpkDataModels
 
     public class Control_Stops
     {
+        public int variant_id;
         public int stop_id;
-        public string variant_id;
     }
 
     public class Feed_Info
@@ -154,9 +241,9 @@ public class MpkDataModels
     {
         public string route_id;
         public int agency_id;
-        public string route_desc;
-        public string route_long_name;
         public string route_short_name;
+        public string route_long_name;
+        public string route_desc;
         public int route_type;
         public int route_type2_id;
         public Date valid_from;
@@ -164,19 +251,19 @@ public class MpkDataModels
 
         public Agency Agency { get; set; }
         public Route_Types RouteTypes { get; set; }
-        public Trips Trips { get; set; }
+        public ICollection<Trips> Trips { get; set; }
     }
 
     public class Shapes
     {
-        public string shape_id;
+        public int shape_id;
         public string shape_pt_lat;
         public string shape_pt_lon;
         public int shape_pt_sequence;
         
-        public Trips Trips { get; set; }
+        //public virtual ICollection<Trips> Trips { get; set; }
     }
-
+    
     public class Stop_Times
     {
         public string trip_id;
@@ -202,7 +289,7 @@ public class MpkDataModels
         public ICollection<Stop_Times> StopTimes { get; set; }
         
     }
-
+  
     public class Trips
     {   
         public string route_id;
@@ -213,24 +300,24 @@ public class MpkDataModels
         public int shape_id;
         public int brigade_id;
         public int vehicle_id;
-        public string variant_id;
+        public int variant_id;
        
         public Routes Routes { get; set; }
         public Calendar Calendar { get; set; }
         public ICollection<Stop_Times> StopTimes { get; set; }
-        public ICollection<Shapes> Shapes { get; set; }
-        public ICollection<Variants> Variants { get; set; }
+        //public virtual Shapes Shapes { get; set; }
+        public Variants Variants { get; set; }
     }
 
     public class Variants
     {
-        public string variant_id;
+        public int variant_id;
         public bool is_main;
         public string equiv_main_variant_id;
         public string join_stop_id;
         public string disjoin_stop_id;
         
-        public Trips Trips { get; set; }
+        public ICollection<Trips> Trips { get; set; }
     }
 
     public class Vehicle_Types

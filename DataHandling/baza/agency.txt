@@ -1,0 +1,9 @@
+﻿agency_id,agency_name,agency_url,agency_timezone,agency_phone,agency_lang
+2,"MPK Autobusy","http://www.mpk.wroc.pl","Europe/Warsaw","71 308 50 30","pl"
+3,"MPK Tramwaje","http://www.mpk.wroc.pl","Europe/Warsaw","71 308 50 30","pl"
+5,"DLA Wisznia Mała","http://www.dla.com.pl","Europe/Warsaw","71 782 81 31","pl"
+11,"DLA Miękinia","http://www.dla.com.pl","Europe/Warsaw","71 782 81 31","pl"
+15,"KŁOSOK Długołęka","http://www.klosok.eu","Europe/Warsaw","792 700 440","pl"
+17,"DLA Długołęka","http://www.dla.com.pl","Europe/Warsaw","71 782 81 31","pl"
+18,"KŁOSOK Wisznia Mała","http://www.klosok.eu","Europe/Warsaw","792 700 440","pl"
+19,"DLA 5 Gmin","http://www.dla.com.pl","Europe/Warsaw","71 782 81 31","pl"

@@ -11,8 +11,8 @@ public class UserDataBaseContext:DbContext
     protected override void OnConfiguring(DbContextOptionsBuilder optionsBuilder)
     {
         var cpath = Directory.GetCurrentDirectory();
-        if (!Directory.Exists(cpath + "/database")) ;
-        Directory.CreateDirectory(cpath + "/database");
+        if (!Directory.Exists(cpath + "/database"))
+            Directory.CreateDirectory(cpath + "/database");
         cpath += "/database";
         if (!File.Exists(cpath + "/user.sqlite"))
             File.Create(cpath + "/user.sqlite");

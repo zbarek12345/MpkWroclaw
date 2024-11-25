@@ -25,12 +25,16 @@ public class MpkDatabaseContext:DbContext
     protected override void OnConfiguring(DbContextOptionsBuilder optionsBuilder)
     {
         var cpath = Directory.GetCurrentDirectory();
-        if (!Directory.Exists(cpath + "/database")) ;
+        if (!Directory.Exists(cpath + "/database"))
             Directory.CreateDirectory(cpath + "/database");
         cpath += "/database";
         if (!File.Exists(cpath + "/mpk.sqlite"))
             File.Create(cpath + "/mpk.sqlite");
         optionsBuilder.UseSqlite($"Data Source={cpath}/mpk.sqlite");
+
+        optionsBuilder.LogTo(Console.WriteLine, LogLevel.Information);
+        optionsBuilder.EnableDetailedErrors();
+        optionsBuilder.EnableSensitiveDataLogging();
     }
     
     protected override void OnModelCreating(ModelBuilder modelBuilder)
@@ -141,7 +145,7 @@ public class MpkDatabaseContext:DbContext
         {
             entity.Property(a => a.contract_id)
                 .HasColumnName("contract_id")
-                .HasColumnType("integer");
+                .HasColumnType("varchar(64)");
 
             entity.Property(a => a.contract_conclusion_date)
                 .HasColumnName("contract_conclusion_date")
@@ -189,7 +193,7 @@ public class MpkDatabaseContext:DbContext
         {
             entity.Property(a => a.variant_id)
                 .HasColumnName("variant_id")
-                .HasColumnType("varchar(16)");
+                .HasColumnType("integer");
             
             entity.Property(a => a.stop_id)
                 .HasColumnName("stop_id")
@@ -425,7 +429,7 @@ public class MpkDatabaseContext:DbContext
             
             entity.Property(a => a.variant_id)
                 .HasColumnName("variant_id")
-                .HasColumnType("varchar(16)");
+                .HasColumnType("integer");
 
             entity.HasKey(a => a.trip_id);
             
@@ -458,7 +462,7 @@ public class MpkDatabaseContext:DbContext
         {
             entity.Property(a => a.variant_id)
                 .HasColumnName("variant_id")
-                .HasColumnType("varchar(16)");
+                .HasColumnType("integer");
 
             entity.Property(a => a.is_main)
                 .HasColumnName("is_main")

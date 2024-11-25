@@ -275,7 +275,7 @@ public class MpkDataModels
         public int drop_off_type;
         
         public Stops Stops { get; set; }
-        public Trips Trips { get; set; }
+        public ICollection<Trips> Trips { get; set; }
     }
 
     public class Stops

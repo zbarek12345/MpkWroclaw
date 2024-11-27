@@ -447,10 +447,10 @@ public class MpkDatabaseContext:DbContext
                 .WithMany(s => s.Trips);  // StopTimes odnosi się do jednego Trips
                   // Określamy klucz obcy w Trips
 
-            // entity.HasOne(t => t.Shapes) // Trip has one Shape
-            //     .WithMany(s => s.Trips) // Shape has many Trips
-            //     .HasForeignKey(t => t.shape_id) // Foreign key in Trip
-            //     .HasPrincipalKey(s => s.shape_id);  // Composite key in Shape
+            entity.HasOne(t => t.Shapes) // Trip has one Shape
+                .WithMany(s => s.Trips) // Shape has many Trips
+                .HasForeignKey(t => t.shape_id) // Foreign key in Trip
+                .HasPrincipalKey(s => s.shape_id);  // Composite key in Shape
 
             entity.HasOne(a => a.Variants) // Trips ma wiele powiązanych Variants
                 .WithMany(s => s.Trips)

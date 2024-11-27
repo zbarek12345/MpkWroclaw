@@ -261,7 +261,7 @@ public class MpkDataModels
         public string shape_pt_lon;
         public int shape_pt_sequence;
         
-        //public virtual ICollection<Trips> Trips { get; set; }
+        public virtual ICollection<Trips> Trips { get; set; }
     }
     
     public class Stop_Times
@@ -305,7 +305,7 @@ public class MpkDataModels
         public Routes Routes { get; set; }
         public Calendar Calendar { get; set; }
         public ICollection<Stop_Times> StopTimes { get; set; }
-        //public virtual Shapes Shapes { get; set; }
+        public virtual Shapes Shapes { get; set; }
         public Variants Variants { get; set; }
     }
 

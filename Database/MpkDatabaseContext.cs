@@ -320,7 +320,11 @@ public class MpkDatabaseContext:DbContext
                 .HasColumnType("integer");
 
             entity.HasKey(a => new { a.shape_id, a.shape_pt_sequence});
-            
+
+            entity.HasOne(t => t.Trips)
+                .WithMany() // Since no explicit navigation prop in Shapes for Trips
+                .HasForeignKey(t => t.shape_id)
+                .HasPrincipalKey(a => a.shape_id);
         });
         
         modelBuilder.Entity<MpkDataModels.Stop_Times>(entity =>
@@ -364,7 +368,6 @@ public class MpkDatabaseContext:DbContext
                 .WithMany(s => s.StopTimes)
                 .HasForeignKey(a => a.stop_id);  // Określamy, że stop_id w Stop_Times jest kluczem obcym do tabeli Stops
         });
-
         
         modelBuilder.Entity<MpkDataModels.Stops>(entity =>
         {
@@ -424,8 +427,6 @@ public class MpkDatabaseContext:DbContext
             entity.Property(a => a.vehicle_id)
                 .HasColumnName("vehicle_id")
                 .HasColumnType("integer");
-
-
             
             entity.Property(a => a.variant_id)
                 .HasColumnName("variant_id")
@@ -446,11 +447,11 @@ public class MpkDatabaseContext:DbContext
             entity.HasMany(a => a.StopTimes) // Trips ma wiele powiązanych StopTimes
                 .WithMany(s => s.Trips);  // StopTimes odnosi się do jednego Trips
                   // Określamy klucz obcy w Trips
-
-            entity.HasOne(t => t.Shapes) // Trip has one Shape
-                .WithMany(s => s.Trips) // Shape has many Trips
-                .HasForeignKey(t => t.shape_id) // Foreign key in Trip
-                .HasPrincipalKey(s => s.shape_id);  // Composite key in Shape
+                  
+            // entity.HasMany(t => t.Shapes) // Shape belongs to a single Trip
+            //     .WithOne( s => s.Trips) // No navigation property in Trips for Shapes
+            //     .HasForeignKey(s => s.shape_id)
+            //     .HasPrincipalKey(t=>t.shape_id); // Foreign key in Shape referencing to Trips
 
             entity.HasOne(a => a.Variants) // Trips ma wiele powiązanych Variants
                 .WithMany(s => s.Trips)

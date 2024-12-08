@@ -396,7 +396,7 @@ public class MpkDataModels
         public string shape_pt_lon;
         public int shape_pt_sequence;
         
-        public virtual ICollection<Trips> Trips { get; set; }
+        public Trips Trips { get; set; }
 
         public static implicit operator Shapes(MPkDataModelsSimplified.Shapes a) => new Shapes{
             shape_id = a.shape_id, shape_pt_lat = a.shape_pt_lat, shape_pt_lon = a.shape_pt_lon,
@@ -441,6 +441,7 @@ public class MpkDataModels
   
     public class Trips
     {   
+        
         public string route_id;
         public int service_id;
         public string trip_id;
@@ -454,14 +455,14 @@ public class MpkDataModels
         public Routes Routes { get; set; }
         public Calendar Calendar { get; set; }
         public ICollection<Stop_Times> StopTimes { get; set; }
-        public virtual Shapes Shapes { get; set; }
+        public ICollection<Shapes> Shapes { get; set; }
         public Variants Variants { get; set; }
 
         public static implicit operator Trips(MPkDataModelsSimplified.Trips a) => new Trips {
             route_id = a.route_id, service_id = a.service_id, trip_id = a.trip_id,
             trip_headsign = a.trip_headsign, direction_id = a.direction_id, shape_id = a.shape_id,
             brigade_id = a.brigade_id, vehicle_id = a.vehicle_id, variant_id = a.variant_id, Routes =  null,
-            Calendar = null, Shapes =  null, StopTimes = null, Variants = null
+            Calendar = null,Shapes = null,StopTimes = null, Variants = null
         };
     }
 

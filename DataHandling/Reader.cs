@@ -23,6 +23,11 @@ public class Reader
 
         var archive = new ZipArchive(stream);
         
+        if(Directory.Exists(_localString))
+        {
+            Directory.Delete(_localString, true);
+            Directory.CreateDirectory(_localString);
+        }
         archive.ExtractToDirectory(_localString);
 
     }
@@ -109,18 +114,29 @@ public class Reader
     {
         return _updateLock;
     }
-    
+
     private bool IsValid<T>(T obj)
     {
         var properties = typeof(T).GetProperties();
         foreach (var property in properties)
         {
-            // Jeśli pole ma wartość null i nie jest typem Nullable, obiekt jest nieprawidłowy
-            if (property.GetValue(obj) == null && Nullable.GetUnderlyingType(property.PropertyType) == null)
+            var value = property.GetValue(obj);
+
+            // If a property is nullable and has no value, continue
+            if (value == null && Nullable.GetUnderlyingType(property.PropertyType) != null)
+            {
+                continue;
+            }
+
+            // If a property is of a reference type (excluding string) and has no value, mark invalid
+            if (value == null && !property.PropertyType.IsPrimitive && typeof(string) != property.PropertyType)
             {
                 return false;
             }
+
+            // Optionally, further validation logic can be added here for specific properties
         }
+
         return true;
     }
 
@@ -137,7 +153,7 @@ public class Reader
         #region working
         Object allRecords = _context.Agencies.ToList();
         _context.Agencies.RemoveRange( (List<MpkDataModels.Agency>)allRecords);
-        foreach (var agency in ReadData<MpkDataModels.Agency>(_localString+"/agency.txt"))
+        foreach (var agency in ReadData<MPkDataModelsSimplified.Agency>(_localString+"/agency.txt"))
         {
             if (IsValid(agency))
             {
@@ -149,9 +165,9 @@ public class Reader
         
         allRecords = _context.Calendars.ToList();
         _context.Calendars.RemoveRange( (List<MpkDataModels.Calendar>)allRecords);
-        foreach (var calendar in ReadData<MpkDataModels.Calendar>(_localString+"/calendar.txt"))
+        foreach (var calendar in ReadData<MPkDataModelsSimplified.Calendar>(_localString+"/calendar.txt"))
         {
-            if (IsValid((calendar)))
+            if (IsValid(calendar))
             {
                 dbContext.Calendars.Add(calendar);
             }
@@ -161,7 +177,7 @@ public class Reader
         
         allRecords = _context.CalendarDatesEnumerable.ToList();
         _context.CalendarDatesEnumerable.RemoveRange( (List<MpkDataModels.Calendar_Dates>)allRecords);
-        foreach (var calendar_dates in ReadData<MpkDataModels.Calendar_Dates>(_localString+"/calendar_dates.txt"))
+        foreach (var calendar_dates in ReadData<MPkDataModelsSimplified.Calendar_Dates>(_localString+"/calendar_dates.txt"))
         {
             if (IsValid(calendar_dates))
             {
@@ -209,7 +225,7 @@ public class Reader
         
         allRecords = _context.RouteTypes.ToList();
         _context.RouteTypes.RemoveRange( (List<MpkDataModels.Route_Types>)allRecords);
-        foreach (var route_type in ReadData<MpkDataModels.Route_Types>(_localString + "/route_types.txt"))
+        foreach (var route_type in ReadData<MPkDataModelsSimplified.Route_Types>(_localString + "/route_types.txt"))
         {
             if (IsValid(route_type))
             {
@@ -221,7 +237,7 @@ public class Reader
         
         allRecords = _context.Routes.ToList();
         _context.Routes.RemoveRange( (List<MpkDataModels.Routes>)allRecords);
-        foreach (var route in ReadData<MpkDataModels.Routes>(_localString + "/routes.txt"))
+        foreach (var route in ReadData<MPkDataModelsSimplified.Routes>(_localString + "/routes.txt"))
         {
             if (IsValid(route))
             {
@@ -233,7 +249,7 @@ public class Reader
         
         allRecords = _context.Shapes.ToList();
         _context.Shapes.RemoveRange( (List<MpkDataModels.Shapes>)allRecords);
-        foreach (var shape in ReadData<MpkDataModels.Shapes>(_localString + "/shapes.txt"))
+        foreach (var shape in ReadData<MPkDataModelsSimplified.Shapes>(_localString + "/shapes.txt"))
         {
             if (IsValid(shape))
             {
@@ -245,7 +261,7 @@ public class Reader
         
         allRecords = _context.StopTimes.ToList();
         _context.StopTimes.RemoveRange( (List<MpkDataModels.Stop_Times>)allRecords);
-        foreach (var stop_time in ReadData<MpkDataModels.Stop_Times>(_localString + "/stop_times.txt"))
+        foreach (var stop_time in ReadData<MPkDataModelsSimplified.Stop_Times>(_localString + "/stop_times.txt"))
         {
             if (IsValid(stop_time))
             {
@@ -258,7 +274,7 @@ public class Reader
         
         allRecords = _context.Stops.ToList();
         _context.Stops.RemoveRange( (List<MpkDataModels.Stops>)allRecords);
-        foreach (var stop in ReadData<MpkDataModels.Stops>(_localString + "/stops.txt"))
+        foreach (var stop in ReadData<MPkDataModelsSimplified.Stops>(_localString + "/stops.txt"))
         {
             if (IsValid(stop))
             {
@@ -270,7 +286,7 @@ public class Reader
         
         allRecords = _context.Trips.ToList();
         _context.Trips.RemoveRange( (List<MpkDataModels.Trips>)allRecords);
-        foreach (var trip in ReadData<MpkDataModels.Trips>(_localString + "/trips.txt"))
+        foreach (var trip in ReadData<MPkDataModelsSimplified.Trips>(_localString + "/trips.txt"))
         {
             if (IsValid(trip))
             {
@@ -282,7 +298,7 @@ public class Reader
         
         allRecords = _context.Variants.ToList();
         _context.Variants.RemoveRange( (List<MpkDataModels.Variants>)allRecords);
-        foreach (var variant in ReadData<MpkDataModels.Variants>(_localString + "/variants.txt"))
+        foreach (var variant in ReadData<MPkDataModelsSimplified.Variants>(_localString + "/variants.txt"))
         {
             if (IsValid(variant))
             {

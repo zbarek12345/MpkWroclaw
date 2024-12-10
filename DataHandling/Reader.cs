@@ -258,18 +258,18 @@ public class Reader
         }
         
         dbContext.SaveChanges();
-        //
-        // allRecords = _context.StopTimes.ToList();
-        // _context.StopTimes.RemoveRange( (List<MpkDataModels.Stop_Times>)allRecords);
-        // foreach (var stop_time in ReadData<MPkDataModelsSimplified.Stop_Times>(_localString + "/stop_times.txt"))
-        // {
-        //     if (IsValid(stop_time))
-        //     {
-        //         dbContext.StopTimes.Add(stop_time);
-        //     }
-        // }
-        //
-        // dbContext.SaveChanges();
+        
+        allRecords = _context.StopTimes.ToList();
+        _context.StopTimes.RemoveRange( (List<MpkDataModels.Stop_Times>)allRecords);
+        foreach (var stop_time in ReadData<MPkDataModelsSimplified.Stop_Times>(_localString + "/stop_times.txt"))
+        {
+            if (IsValid(stop_time))
+            {
+                dbContext.StopTimes.Add(stop_time);
+            }
+        }
+        
+        dbContext.SaveChanges();
         
         
         allRecords = _context.Stops.ToList();

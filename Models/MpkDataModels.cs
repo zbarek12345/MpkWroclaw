@@ -431,11 +431,11 @@ public class MpkDataModels
         public string stop_lat;
         public string stop_lon;
         
-        public ICollection<Stop_Times> StopTimes { get; set; }
+        // public ICollection<Stop_Times> StopTimes { get; set; }
 
         public static implicit operator Stops(MPkDataModelsSimplified.Stops a) => new Stops {
             stop_id = a.stop_id, stop_code = a.stop_code, stop_name = a.stop_name,
-            stop_lat = a.stop_lat, stop_lon = a.stop_lon, StopTimes = null
+            stop_lat = a.stop_lat, stop_lon = a.stop_lon
         };
     }
   

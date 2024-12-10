@@ -379,13 +379,13 @@ public class MpkDataModels
 
         public Agency Agency { get; set; }
         public Route_Types RouteTypes { get; set; }
-        public ICollection<Trips> Trips { get; set; }
+        // public ICollection<Trips> Trips { get; set; }
 
         public static implicit operator Routes(MPkDataModelsSimplified.Routes a) => new Routes {
             route_id = a.route_id, agency_id = a.agency_id, route_short_name = a.route_short_name,
             route_long_name = a.route_long_name,
             route_desc = a.route_desc, route_type = a.route_type, route_type2_id = a.route_type2_id,
-            valid_from = a.valid_from, valid_until = a.valid_until, Trips = null, Agency = null, RouteTypes = null
+            valid_from = a.valid_from, valid_until = a.valid_until, Agency = null, RouteTypes = null
         };
     }
 
@@ -396,11 +396,11 @@ public class MpkDataModels
         public string shape_pt_lon;
         public int shape_pt_sequence;
         
-        public virtual ICollection<Trips> Trips { get; set; }
+        // public virtual ICollection<Trips> Trips { get; set; }
 
         public static implicit operator Shapes(MPkDataModelsSimplified.Shapes a) => new Shapes{
             shape_id = a.shape_id, shape_pt_lat = a.shape_pt_lat, shape_pt_lon = a.shape_pt_lon,
-            shape_pt_sequence = a.shape_pt_sequence, Trips = null
+            shape_pt_sequence = a.shape_pt_sequence
         };
     }
     
@@ -414,12 +414,12 @@ public class MpkDataModels
         public int pickup_type;
         public int drop_off_type;
         
-        public Stops Stops { get; set; }
-        public ICollection<Trips> Trips { get; set; }
+        // public Stops Stops { get; set; }
+        // public ICollection<Trips> Trips { get; set; }
 
         public static implicit operator Stop_Times(MPkDataModelsSimplified.Stop_Times a) => new Stop_Times{
             trip_id = a.trip_id, arrival_time = a.arrival_time, departure_time = a.departure_time, stop_id = a.stop_id,
-            stop_sequence = a.stop_sequence, pickup_type = a.pickup_type, drop_off_type = a.drop_off_type, Stops = null, Trips = null
+            stop_sequence = a.stop_sequence, pickup_type = a.pickup_type, drop_off_type = a.drop_off_type
         };
     }
 
@@ -451,17 +451,16 @@ public class MpkDataModels
         public int vehicle_id;
         public int variant_id;
        
-        public Routes Routes { get; set; }
+        // public Routes Routes { get; set; }
         public Calendar Calendar { get; set; }
-        public ICollection<Stop_Times> StopTimes { get; set; }
-        public virtual Shapes Shapes { get; set; }
+        // public ICollection<Stop_Times> StopTimes { get; set; }
+        // public virtual Shapes Shapes { get; set; }
         public Variants Variants { get; set; }
 
         public static implicit operator Trips(MPkDataModelsSimplified.Trips a) => new Trips {
             route_id = a.route_id, service_id = a.service_id, trip_id = a.trip_id,
             trip_headsign = a.trip_headsign, direction_id = a.direction_id, shape_id = a.shape_id,
-            brigade_id = a.brigade_id, vehicle_id = a.vehicle_id, variant_id = a.variant_id, Routes =  null,
-            Calendar = null, Shapes =  null, StopTimes = null, Variants = null
+            brigade_id = a.brigade_id, vehicle_id = a.vehicle_id, variant_id = a.variant_id, Calendar = null, Variants = null
         };
     }
 
@@ -477,8 +476,8 @@ public class MpkDataModels
 
         public static implicit operator Variants(MPkDataModelsSimplified.Variants a) => new Variants
         {
-            variant_id = a.variant_id, equiv_main_variant_id = a.equiv_main_variant_id, join_stop_id = a.join_stop_id,
-            disjoin_stop_id = a.disjoin_stop_id, is_main = a.is_main, Trips = null
+            variant_id = a.variant_id, equiv_main_variant_id = a.equiv_main_variant_id ?? "DEFAULT_VALUE", join_stop_id = a.join_stop_id ?? "DEFAULT_VALUE",
+            disjoin_stop_id = a.disjoin_stop_id ?? "DEFAULT_VALUE", is_main = a.is_main, Trips = null
         };
     }
 

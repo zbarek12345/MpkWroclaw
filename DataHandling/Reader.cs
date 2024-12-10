@@ -253,23 +253,23 @@ public class Reader
         {
             if (IsValid(shape))
             {
-                dbContext.Shapes.Add(shape);
+               dbContext.Shapes.Add(shape);
             }
         }
         
         dbContext.SaveChanges();
-        
-        allRecords = _context.StopTimes.ToList();
-        _context.StopTimes.RemoveRange( (List<MpkDataModels.Stop_Times>)allRecords);
-        foreach (var stop_time in ReadData<MPkDataModelsSimplified.Stop_Times>(_localString + "/stop_times.txt"))
-        {
-            if (IsValid(stop_time))
-            {
-                dbContext.StopTimes.Add(stop_time);
-            }
-        }
-        
-        dbContext.SaveChanges();
+        //
+        // allRecords = _context.StopTimes.ToList();
+        // _context.StopTimes.RemoveRange( (List<MpkDataModels.Stop_Times>)allRecords);
+        // foreach (var stop_time in ReadData<MPkDataModelsSimplified.Stop_Times>(_localString + "/stop_times.txt"))
+        // {
+        //     if (IsValid(stop_time))
+        //     {
+        //         dbContext.StopTimes.Add(stop_time);
+        //     }
+        // }
+        //
+        // dbContext.SaveChanges();
         
         
         allRecords = _context.Stops.ToList();
@@ -284,18 +284,6 @@ public class Reader
 
         dbContext.SaveChanges();
         
-        allRecords = _context.Trips.ToList();
-        _context.Trips.RemoveRange( (List<MpkDataModels.Trips>)allRecords);
-        foreach (var trip in ReadData<MPkDataModelsSimplified.Trips>(_localString + "/trips.txt"))
-        {
-            if (IsValid(trip))
-            {
-                dbContext.Trips.Add(trip); 
-            }
-        }
-
-        dbContext.SaveChanges();
-        
         allRecords = _context.Variants.ToList();
         _context.Variants.RemoveRange( (List<MpkDataModels.Variants>)allRecords);
         foreach (var variant in ReadData<MPkDataModelsSimplified.Variants>(_localString + "/variants.txt"))
@@ -305,6 +293,18 @@ public class Reader
                 dbContext.Variants.Add(variant);
             }
             
+        }
+
+        dbContext.SaveChanges();
+        
+        allRecords = _context.Trips.ToList();
+        _context.Trips.RemoveRange( (List<MpkDataModels.Trips>)allRecords);
+        foreach (var trip in ReadData<MPkDataModelsSimplified.Trips>(_localString + "/trips.txt"))
+        {
+            if (IsValid(trip))
+            {
+                dbContext.Trips.Add(trip); 
+            }
         }
 
         dbContext.SaveChanges();

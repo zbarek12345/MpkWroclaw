@@ -119,7 +119,7 @@ public class MpkSingleton
         }
         
     }
-    public List<StopInfo> getStopsInfo()
+    public string getStopsInfo()
     {
         var stops = _databaseContext.Stops.ToList();
         List<StopInfo> infoList = new List<StopInfo>();
@@ -129,7 +129,7 @@ public class MpkSingleton
             infoList.Add(stopInfo);
         }
 
-        return infoList;
+        return JsonSerializer.Serialize(infoList);
     }
 
     // public string getNextVehicles(int stop_id, int count)

@@ -360,7 +360,7 @@ public class MpkDataModels
         public int route_type2_id;
         public string route_type2_name;
             
-        public Routes Routes { get; set; }
+        public ICollection<Routes> Routes { get; set; }
         
         public static implicit operator Route_Types(MPkDataModelsSimplified.Route_Types a) => new Route_Types{
             route_type2_id = a.route_type2_id, route_type2_name = a.route_type2_name, Routes = null

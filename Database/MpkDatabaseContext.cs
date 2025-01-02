@@ -294,11 +294,12 @@ public class MpkDatabaseContext:DbContext
                 .WithMany(c => c.Routes)
                 .HasForeignKey(a => a.agency_id);
 
-            // Relacja One-to-One z Route_Types
-            entity.HasOne<MpkDataModels.Route_Types>(a => a.RouteTypes)   // Określenie typu dla Route_Types
-                .WithOne(c => c.Routes)   // Określenie, że `Route_Types` ma jedno `Routes`
-                .HasForeignKey<MpkDataModels.Routes>(a => a.route_type2_id);  // Określenie, że `route_type2_id` jest kluczem obcym
-            
+            // Relacja One-to-Many z Route_Types
+            entity.HasOne<MpkDataModels.Route_Types>(a => a.RouteTypes) // Każdy Route ma jeden Route_Type
+                .WithMany(b => b.Routes) // Jeden Route_Type ma wiele Routes
+                .HasForeignKey(a => a.route_type2_id) // Klucz obcy w Routes
+                .OnDelete(DeleteBehavior.Restrict); // Opcjonalne: Zablokuj kaskadowe usuwanie
+
         });
 
         modelBuilder.Entity<MpkDataModels.Shapes>(entity =>

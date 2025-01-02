@@ -11,7 +11,7 @@ public class Reader
 {
     private bool _updateLock = false;
     private static string _tmp = Directory.GetCurrentDirectory()+"/tmp";
-    private static string _localString = _tmp+"/OtwartyWroclaw_rozklad_jazdy_GTFS";
+    private static string _localString = _tmp+"OtwartyWroclaw_rozklad_jazdy_GTFS";
     private MpkDatabaseContext _context;
     public void DownloadSource()
     {

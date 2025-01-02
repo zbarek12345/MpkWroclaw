@@ -53,22 +53,6 @@ public class Reader
 
         for (int i = 0; i < fields.Length; i++)
         {
-            if (i >= data.Length || string.IsNullOrWhiteSpace(data[i]))
-            {
-                // Jeśli brakuje danych, ustaw na null (dla typów Nullable) i przejdź dalej
-                if (Nullable.GetUnderlyingType(fields[i].FieldType) != null || !fields[i].FieldType.IsValueType)
-                {
-                    fields[i].SetValue(instance, null);
-                }
-                else
-                {
-                    // Jeśli typ nie pozwala na null i dane są brakujące, oznacz obiekt jako nieprawidłowy
-                    valid = false;
-                    break;
-                }
-                continue;
-            }
-
             try
             {
                 var cleanValue = data[i].Replace("\"", "").Replace("\r", "").Trim();
@@ -153,14 +137,16 @@ public class Reader
         #region working
         Object allRecords = _context.Agencies.ToList();
         _context.Agencies.RemoveRange( (List<MpkDataModels.Agency>)allRecords);
+        List<MpkDataModels.Agency> agencies = new List<MpkDataModels.Agency>();
         foreach (var agency in ReadData<MPkDataModelsSimplified.Agency>(_localString+"/agency.txt"))
         {
             if (IsValid(agency))
             {
-                dbContext.Agencies.Add(agency);
+                agencies.Add(agency);
             }
         }
         
+        dbContext.Agencies.AddRange(agencies);
         dbContext.SaveChanges();
         
         allRecords = _context.Calendars.ToList();
@@ -175,29 +161,29 @@ public class Reader
         
         dbContext.SaveChanges();
         
-        allRecords = _context.CalendarDatesEnumerable.ToList();
-        _context.CalendarDatesEnumerable.RemoveRange( (List<MpkDataModels.Calendar_Dates>)allRecords);
-        foreach (var calendar_dates in ReadData<MPkDataModelsSimplified.Calendar_Dates>(_localString+"/calendar_dates.txt"))
-        {
-            if (IsValid(calendar_dates))
-            {
-                dbContext.CalendarDatesEnumerable.Add(calendar_dates);
-            }
-        }
+        // allRecords = _context.CalendarDatesEnumerable.ToList();
+        // _context.CalendarDatesEnumerable.RemoveRange( (List<MpkDataModels.Calendar_Dates>)allRecords);
+        // foreach (var calendar_dates in ReadData<MPkDataModelsSimplified.Calendar_Dates>(_localString+"/calendar_dates.txt"))
+        // {
+        //     if (IsValid(calendar_dates))
+        //     {
+        //         dbContext.CalendarDatesEnumerable.Add(calendar_dates);
+        //     }
+        // }
+        //
+        // dbContext.SaveChanges();
         
-        dbContext.SaveChanges();
-        
-        allRecords = _context.ContractsExts.ToList();
-        _context.ContractsExts.RemoveRange( (List<MpkDataModels.Contracts_Ext>)allRecords);
-        foreach (var contractsExt in ReadData<MpkDataModels.Contracts_Ext>(_localString+"/contracts_ext.txt"))
-        {
-            if (IsValid(contractsExt))
-            {
-                dbContext.ContractsExts.Add(contractsExt);
-            }
-        }
-        
-        dbContext.SaveChanges();
+        // allRecords = _context.ContractsExts.ToList();
+        // _context.ContractsExts.RemoveRange( (List<MpkDataModels.Contracts_Ext>)allRecords);
+        // foreach (var contractsExt in ReadData<MpkDataModels.Contracts_Ext>(_localString+"/contracts_ext.txt"))
+        // {
+        //     if (IsValid(contractsExt))
+        //     {
+        //         dbContext.ContractsExts.Add(contractsExt);
+        //     }
+        // }
+        //
+        // dbContext.SaveChanges();
         
         allRecords = _context.ControlStops.ToList();
         _context.ControlStops.RemoveRange( (List<MpkDataModels.Control_Stops>)allRecords);
@@ -237,39 +223,43 @@ public class Reader
         
         allRecords = _context.Routes.ToList();
         _context.Routes.RemoveRange( (List<MpkDataModels.Routes>)allRecords);
+        List<MpkDataModels.Routes> routes = new List<MpkDataModels.Routes>();
         foreach (var route in ReadData<MPkDataModelsSimplified.Routes>(_localString + "/routes.txt"))
         {
             if (IsValid(route))
             {
-                dbContext.Routes.Add(route);
+                //Console.WriteLine(route.route_id);
+                routes.Add(route);
             }
         }
         
+        System.Console.WriteLine(routes.Count);
+        dbContext.Routes.AddRange(routes);
         dbContext.SaveChanges();
-        
-        allRecords = _context.Shapes.ToList();
-        _context.Shapes.RemoveRange( (List<MpkDataModels.Shapes>)allRecords);
-        foreach (var shape in ReadData<MPkDataModelsSimplified.Shapes>(_localString + "/shapes.txt"))
-        {
-            if (IsValid(shape))
-            {
-               dbContext.Shapes.Add(shape);
-            }
-        }
-        
-        dbContext.SaveChanges();
-        
-        allRecords = _context.StopTimes.ToList();
-        _context.StopTimes.RemoveRange( (List<MpkDataModels.Stop_Times>)allRecords);
-        foreach (var stop_time in ReadData<MPkDataModelsSimplified.Stop_Times>(_localString + "/stop_times.txt"))
-        {
-            if (IsValid(stop_time))
-            {
-                dbContext.StopTimes.Add(stop_time);
-            }
-        }
-        
-        dbContext.SaveChanges();
+        //
+        // allRecords = _context.Shapes.ToList();
+        // _context.Shapes.RemoveRange( (List<MpkDataModels.Shapes>)allRecords);
+        // foreach (var shape in ReadData<MPkDataModelsSimplified.Shapes>(_localString + "/shapes.txt"))
+        // {
+        //     if (IsValid(shape))
+        //     {
+        //        dbContext.Shapes.Add(shape);
+        //     }
+        // }
+        //
+        // dbContext.SaveChanges();
+        //
+        // allRecords = _context.StopTimes.ToList();
+        // _context.StopTimes.RemoveRange( (List<MpkDataModels.Stop_Times>)allRecords);
+        // foreach (var stop_time in ReadData<MPkDataModelsSimplified.Stop_Times>(_localString + "/stop_times.txt"))
+        // {
+        //     if (IsValid(stop_time))
+        //     {
+        //         dbContext.StopTimes.Add(stop_time);
+        //     }
+        // }
+        //
+        // dbContext.SaveChanges();
         
         
         allRecords = _context.Stops.ToList();

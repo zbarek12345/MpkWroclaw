@@ -30,9 +30,9 @@ public class MPkDataModelsSimplified
     
     public class Calendar_Dates
     {
+        public int service_id;
         public MpkDataModels.Date date;
         public int exception_type;
-        public int service_id;
     }
     
     public class Route_Types
@@ -218,7 +218,9 @@ public class MpkDataModels
             int year = 0, month = 0 , day = 0;
             if(source.Length == 8)
             {
-               
+                year = int.Parse(source.Substring(0, 4));
+                month = int.Parse(source.Substring(4, 2));
+                day = int.Parse(source.Substring(6, 2));
             }
             else if (source.Length == 10)
             {
@@ -247,6 +249,7 @@ public class MpkDataModels
         }
         
     }
+    
     public class Agency
     {
         public int agency_id;
@@ -313,9 +316,9 @@ public class MpkDataModels
 
     public class Calendar_Dates
     {
+        public int service_id;
         public Date date;
         public int exception_type;
-        public int service_id;
         
         public Calendar Calendar { get; set; }
 
@@ -351,8 +354,7 @@ public class MpkDataModels
         public Date feed_start_date;
         public Date feed_end_date;
     }
-
-
+    
     public class Route_Types
     {
         public int route_type2_id;
@@ -380,7 +382,6 @@ public class MpkDataModels
         public Agency Agency { get; set; }
         public Route_Types RouteTypes { get; set; }
         // public ICollection<Trips> Trips { get; set; }
-
         public static implicit operator Routes(MPkDataModelsSimplified.Routes a) => new Routes {
             route_id = a.route_id, agency_id = a.agency_id, route_short_name = a.route_short_name,
             route_long_name = a.route_long_name,

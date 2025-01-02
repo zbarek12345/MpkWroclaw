@@ -9,13 +9,26 @@ var cpath = Directory.GetCurrentDirectory();
 cpath += "/database";
 builder.Services.AddDbContext<MpkDatabaseContext>(options =>
     options.UseSqlite($"Data Source={cpath}/mpk.sqlite"));
+
+builder.Services.AddDbContext<UserDataBaseContext>(options =>
+    options.UseSqlite(builder.Configuration.GetConnectionString($"Data Source={cpath}/user.sqlite")));
+
 builder.Services.AddScoped<MpkSingleton>();
+builder.Services.AddScoped<UserSingleton>();
 builder.Services.AddControllers();
 builder.Services.AddEndpointsApiExplorer();
 builder.Services.AddSwaggerGen();
 
-var app = builder.Build();
+builder.Services.AddCors(options =>
+{
+    options.AddPolicy("AllowAllOrigins", policy =>
+    {
+        policy.AllowAnyOrigin().AllowAnyHeader().AllowAnyMethod();
+    });
+});
 
+var app = builder.Build();
+app.UseCors("AllowAllOrigins");
 // Configure the HTTP request pipeline.
 if (app.Environment.IsDevelopment())
 {

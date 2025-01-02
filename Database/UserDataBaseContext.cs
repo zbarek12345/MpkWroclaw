@@ -8,6 +8,11 @@ public class UserDataBaseContext:DbContext
     public DbSet<UserModel> UserModels { get; set; }
     public DbSet<UserLogins> UserLogins { get; set; }
     
+    public UserDataBaseContext(DbContextOptions<UserDataBaseContext> options)
+        : base(options)
+    {
+    }
+    
     protected override void OnConfiguring(DbContextOptionsBuilder optionsBuilder)
     {
         var cpath = Directory.GetCurrentDirectory();
@@ -17,6 +22,7 @@ public class UserDataBaseContext:DbContext
         if (!File.Exists(cpath + "/user.sqlite"))
             File.Create(cpath + "/user.sqlite");
         optionsBuilder.UseSqlite($"Data Source={cpath}/user.sqlite");
+        Console.WriteLine(cpath);
     }
 
     protected override void OnModelCreating(ModelBuilder modelBuilder)

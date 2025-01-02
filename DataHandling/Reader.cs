@@ -1,8 +1,11 @@
 ﻿using System.IO.Compression;
 using System.Reflection;
+using Microsoft.AspNetCore.Mvc;
 using Microsoft.EntityFrameworkCore;
+using Microsoft.Extensions.Options;
 using MPKWrocław.Database;
 using MPKWrocław.Models;
+
 
 namespace MPKWrocław.DataHandling;
     
@@ -330,6 +333,15 @@ public class Reader
 
     public static void Main()
     {
-        Reader r = new Reader(new MpkDatabaseContext());
+        DbContextOptionsBuilder<MpkDatabaseContext> options = new DbContextOptionsBuilder<MpkDatabaseContext>();
+        var cpath = "/Users/jakubwalica/RiderProjects/MpkWroclaw";
+        if (!Directory.Exists(cpath + "/database"))
+            Directory.CreateDirectory(cpath + "/database");
+        cpath += "/database";
+        Console.WriteLine(cpath);
+        if (!File.Exists(cpath + "/mpk.sqlite"))
+            File.Create(cpath + "/mpk.sqlite");
+        options.UseSqlite($"Data Source={cpath}/mpk.sqlite");
+        Reader r = new Reader(new MpkDatabaseContext( options.Options));
     }
 }

@@ -6,12 +6,14 @@ namespace MPKWrocław.Controllers;
 [Route("mapApi/")]
 public class MapApiController : ControllerBase
 {   
-    MpkSingleton _singleton;
-        
-    // Constructor
-    MapApiController() => _singleton = new MpkSingleton();
+    private readonly MpkSingleton _singleton;
+
+    // Constructor injected via DI
+    public MapApiController(MpkSingleton singleton)
+    {
+        _singleton = singleton;
+    }
     
-    // Add HttpGet attribute to the method for Swagger to recognize the route and HTTP verb
     [HttpGet("stops")]
     public IActionResult GetStops()
     {

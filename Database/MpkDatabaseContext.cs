@@ -1,4 +1,5 @@
-﻿using Microsoft.EntityFrameworkCore;
+﻿using System.Net.Mime;
+using Microsoft.EntityFrameworkCore;
 using MPKWrocław.Models;
 
 namespace MPKWrocław.Database;
@@ -21,17 +22,12 @@ public class MpkDatabaseContext:DbContext
     public DbSet<MpkDataModels.Vehicle_Types> VehicleTypes { get; set; }
     
     // ... Add other DBSets for each of your models
-
+    public MpkDatabaseContext(DbContextOptions<MpkDatabaseContext> options)
+        : base(options)
+    {
+    }
     protected override void OnConfiguring(DbContextOptionsBuilder optionsBuilder)
     {
-        var cpath = Directory.GetCurrentDirectory();
-        if (!Directory.Exists(cpath + "/database"))
-            Directory.CreateDirectory(cpath + "/database");
-        cpath += "/database";
-        if (!File.Exists(cpath + "/mpk.sqlite"))
-            File.Create(cpath + "/mpk.sqlite");
-        optionsBuilder.UseSqlite($"Data Source={cpath}/mpk.sqlite");
-
         optionsBuilder.LogTo(Console.WriteLine, LogLevel.Information);
         optionsBuilder.EnableDetailedErrors();
         optionsBuilder.EnableSensitiveDataLogging();

@@ -4,10 +4,12 @@ namespace MPKWrocław.Database;
 
 public class MpkSingleton
 {
-    private MpkDatabaseContext _databaseContext;
-    public MpkSingleton()
+    private readonly MpkDatabaseContext _databaseContext;
+
+    // Inject MpkDatabaseContext via constructor
+    public MpkSingleton(MpkDatabaseContext databaseContext)
     {
-        _databaseContext = new MpkDatabaseContext();
+        _databaseContext = databaseContext;
     }
     public string GetStopList()
     {
@@ -137,10 +139,10 @@ public class MpkSingleton
     //     var trips = _databaseContext.StopTimes.Where(e => e.stop_id == stop_id && e.arrival_time>=).Select(t => t.trip_id).ToList();
     // }
 
-    public static void Main()
-    {
-        MpkSingleton mpkSingleton = new MpkSingleton();
-        // Console.Write(mpkSingleton.vehiclesForStop(235));
-        Console.WriteLine(mpkSingleton.GetStopList());
-    }
+    // public static void Main()
+    // {
+    //     MpkSingleton mpkSingleton = new MpkSingleton();
+    //     // Console.Write(mpkSingleton.vehiclesForStop(235));
+    //     Console.WriteLine(mpkSingleton.GetStopList());
+    // }
 }

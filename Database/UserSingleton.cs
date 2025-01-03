@@ -45,19 +45,19 @@ public class UserSingleton
         return true;
     }
 
-    public static void Main()
-    {
-        DbContextOptionsBuilder<UserDataBaseContext> options = new DbContextOptionsBuilder<UserDataBaseContext>();
-        // var cpath = "/Users/jakubwalica/RiderProjects/MpkWroclaw";
-        // if (!Directory.Exists(cpath + "/database"))
-        //     Directory.CreateDirectory(cpath + "/database");
-        // cpath += "/database";
-        // Console.WriteLine(cpath);
-        // if (!File.Exists(cpath + "/mpk.sqlite"))
-        //     File.Create(cpath + "/mpk.sqlite");
-        // options.UseSqlite($"Data Source={cpath}/mpk.sqlite");
-        using var dbContext = new UserDataBaseContext(options.Options);
-        dbContext.Database.EnsureCreated();
-        UserSingleton userSingleton = new UserSingleton(dbContext);
-    }
+    // public static void Main()
+    // {
+    //     DbContextOptionsBuilder<UserDataBaseContext> options = new DbContextOptionsBuilder<UserDataBaseContext>();
+    //     // var cpath = "/Users/jakubwalica/RiderProjects/MpkWroclaw";
+    //     // if (!Directory.Exists(cpath + "/database"))
+    //     //     Directory.CreateDirectory(cpath + "/database");
+    //     // cpath += "/database";
+    //     // Console.WriteLine(cpath);
+    //     // if (!File.Exists(cpath + "/mpk.sqlite"))
+    //     //     File.Create(cpath + "/mpk.sqlite");
+    //     // options.UseSqlite($"Data Source={cpath}/mpk.sqlite");
+    //     using var dbContext = new UserDataBaseContext(options.Options);
+    //     dbContext.Database.EnsureCreated();
+    //     UserSingleton userSingleton = new UserSingleton(dbContext);
+    // }
 }

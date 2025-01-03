@@ -13,6 +13,8 @@ builder.Services.AddDbContext<MpkDatabaseContext>(options =>
 builder.Services.AddDbContext<UserDataBaseContext>(options =>
     options.UseSqlite(builder.Configuration.GetConnectionString($"Data Source={cpath}/user.sqlite")));
 
+
+
 builder.Services.AddScoped<MpkSingleton>();
 builder.Services.AddScoped<UserSingleton>();
 builder.Services.AddControllers();
@@ -28,6 +30,8 @@ builder.Services.AddCors(options =>
 });
 
 var app = builder.Build();
+
+
 app.UseCors("AllowAllOrigins");
 // Configure the HTTP request pipeline.
 if (app.Environment.IsDevelopment())

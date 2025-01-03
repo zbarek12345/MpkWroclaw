@@ -3,11 +3,11 @@ using MPKWrocław.Models;
 
 namespace MPKWrocław.Database;
 
-public class UserDataBaseContext:DbContext
+public class UserDataBaseContext : DbContext
 {
     public DbSet<UserModel> UserModels { get; set; }
     public DbSet<UserLogins> UserLogins { get; set; }
-    
+
     public UserDataBaseContext(DbContextOptions<UserDataBaseContext> options)
         : base(options)
     {
@@ -20,10 +20,13 @@ public class UserDataBaseContext:DbContext
             Directory.CreateDirectory(cpath + "/database");
         cpath += "/database";
         if (!File.Exists(cpath + "/user.sqlite"))
-            File.Create(cpath + "/user.sqlite");
-        optionsBuilder.UseSqlite($"Data Source={cpath}/user.sqlite");
-        Console.WriteLine(cpath);
+            File.Create(cpath + "/user.sqlite").Close();
+
+        optionsBuilder
+            .UseSqlite($"Data Source={cpath}/user.sqlite")
+            .ConfigureWarnings(warnings => warnings.Ignore(Microsoft.EntityFrameworkCore.Diagnostics.RelationalEventId.PendingModelChangesWarning));
     }
+
 
     protected override void OnModelCreating(ModelBuilder modelBuilder)
     {
@@ -41,21 +44,21 @@ public class UserDataBaseContext:DbContext
                 .HasColumnName("Username")
                 .HasColumnType("varchar(32)");
 
-            entity.Property(um =>um.Name)
+            entity.Property(um => um.Name)
                 .HasColumnName("Name")
                 .HasColumnType("varchar(32)");
 
-            entity.Property(um =>um.Password)
+            entity.Property(um => um.Password)
                 .HasColumnName("Password")
                 .HasColumnType("varchar(32)");
 
-            entity.Property(um =>um.Email)
+            entity.Property(um => um.Email)
                 .HasColumnName("email")
                 .HasColumnType("varchar(32)");
 
-            entity.HasKey(um =>um.UserID);
+            entity.HasKey(um => um.UserID);
         });
-        
+
         modelBuilder.Entity<UserLogins>(entity =>
         {
             entity.Property(ul => ul.UserID)
@@ -80,10 +83,9 @@ public class UserDataBaseContext:DbContext
 
             entity.Property(ul => ul.LogOutTime)
                 .HasColumnName("LogOutTime")
-                .HasColumnType("LogOutTime");
+                .HasColumnType("datetime");
 
             entity.HasKey(ul => ul.UserID);
         });
-
     }
 }

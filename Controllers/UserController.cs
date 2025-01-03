@@ -1,3 +1,5 @@
+using System.Text.Json;
+using System.Text.Json.Serialization;
 using Microsoft.AspNetCore.Mvc;
 using MPKWrocław.Database;
 using MPKWrocław.Models;
@@ -27,13 +29,40 @@ namespace MPKWrocław.Controllers
             return Ok(token);
         }
 
-        // POST api/user/add
+// POST api/user/add
         [HttpPost("add")]
-        public ActionResult AddUser([FromBody] UserModel userModel)
+        public async Task<IActionResult> AddUser()
         {
-            _userSingleton.AddUser(userModel);
-            return Ok();
+            using (var reader = new StreamReader(Request.Body))
+            {
+                var body = await reader.ReadToEndAsync();
+
+                // Log raw JSON body for debugging
+                Console.WriteLine($"Raw Body: {body}");
+
+                try
+                {
+                    var userModel = JsonSerializer.Deserialize<UserModel>(body, new JsonSerializerOptions
+                    {
+                        PropertyNameCaseInsensitive = true // Ensures JSON property names are case-insensitive
+                    });
+
+                    if (userModel == null)
+                    {
+                        return BadRequest("Invalid JSON payload");
+                    }
+
+                    _userSingleton.AddUser(userModel);
+                    return Ok(new { message = "User added successfully." });
+                }
+                catch (JsonException ex)
+                {
+                    Console.WriteLine($"JSON Deserialization Error: {ex.Message}");
+                    return BadRequest("Invalid JSON format.");
+                }
+            }
         }
+
     }
 
     public class LoginRequest

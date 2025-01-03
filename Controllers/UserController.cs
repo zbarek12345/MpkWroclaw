@@ -26,7 +26,7 @@ namespace MPKWrocław.Controllers
             {
                 return Unauthorized("Invalid username or password");
             }
-            return Ok(token);
+            return Ok(token.ToString());
         }
 
 // POST api/user/add

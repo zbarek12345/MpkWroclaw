@@ -21,7 +21,7 @@ namespace MPKWrocław.Controllers
         [HttpPost("login")]
         public ActionResult<Guid> Login([FromBody] LoginRequest loginRequest)
         {
-            var token = _userSingleton.LoginUser(loginRequest.Username, loginRequest.Password);
+            var token = _userSingleton.LoginUser(loginRequest.Username, loginRequest.Password, loginRequest.LogInDevice, loginRequest.LogInIp);
             if (token == Guid.Empty)
             {
                 return Unauthorized("Invalid username or password");
@@ -69,5 +69,9 @@ namespace MPKWrocław.Controllers
     {
         public string Username { get; set; }
         public string Password { get; set; }
+        
+        public string LogInDevice { get; set; }
+        
+        public string LogInIp { get; set; }
     }
 }

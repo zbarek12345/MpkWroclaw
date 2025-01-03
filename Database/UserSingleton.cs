@@ -19,7 +19,7 @@ public class UserSingleton
         _databaseContext.SaveChanges();
     }
 
-    public Guid LoginUser(string username, string password)
+    public Guid LoginUser(string username, string password, string logInDevice, string logInIp)
     {
         var dataModel = _databaseContext.UserModels
             .FirstOrDefault(um => um.Username == username && um.Password == password);
@@ -27,7 +27,7 @@ public class UserSingleton
         if (dataModel != null)
         {
             var guid = Guid.NewGuid();
-            _databaseContext.UserLogins.Add(new UserLogins { UserID = dataModel.UserID, Token = guid, LogInDate = DateTime.Now, LogOutTime = DateTime.Now.AddDays(1) });
+            _databaseContext.UserLogins.Add(new UserLogins { UserID = dataModel.UserID, Token = guid, LogInDate = DateTime.Now, LogOutTime = DateTime.Now.AddDays(1),LogInDevice = logInDevice, LogInIp = logInIp });
             _databaseContext.SaveChanges();
             return guid;
         }

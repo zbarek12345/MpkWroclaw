@@ -20,7 +20,7 @@ namespace MPKWrocław.Controllers
         // POST api/user/login
         [HttpPost("login")]
         public ActionResult<Guid> Login([FromBody] LoginRequest loginRequest)
-        {
+        {   
             var token = _userSingleton.LoginUser(loginRequest.Username, loginRequest.Password, loginRequest.LogInDevice, loginRequest.LogInIp);
             if (token == Guid.Empty)
             {
@@ -33,33 +33,26 @@ namespace MPKWrocław.Controllers
         [HttpPost("add")]
         public async Task<IActionResult> AddUser()
         {
-            using (var reader = new StreamReader(Request.Body))
+            try
+            {   
+                using StreamReader streamReader = new StreamReader(Request.Body);
+                string json = await streamReader.ReadToEndAsync();
+                var registerRequest = JsonSerializer.Deserialize<RegisterRequest>(json);
+                UserModel um = new UserModel{
+                    UserID = Guid.Parse(registerRequest.UserID),
+                    CreationDate = DateTime.Parse(registerRequest.CreationDate),
+                    Username    =  registerRequest.Username,
+                    Password    = registerRequest.Password,
+                    Name = registerRequest.Name,
+                    Email     = registerRequest.Email,
+                };
+                _userSingleton.AddUser(um);
+                return Ok();
+            }
+            catch (Exception e)
             {
-                var body = await reader.ReadToEndAsync();
-
-                // Log raw JSON body for debugging
-                Console.WriteLine($"Raw Body: {body}");
-
-                try
-                {
-                    var userModel = JsonSerializer.Deserialize<UserModel>(body, new JsonSerializerOptions
-                    {
-                        PropertyNameCaseInsensitive = true // Ensures JSON property names are case-insensitive
-                    });
-
-                    if (userModel == null)
-                    {
-                        return BadRequest("Invalid JSON payload");
-                    }
-
-                    _userSingleton.AddUser(userModel);
-                    return Ok(new { message = "User added successfully." });
-                }
-                catch (JsonException ex)
-                {
-                    Console.WriteLine($"JSON Deserialization Error: {ex.Message}");
-                    return BadRequest("Invalid JSON format.");
-                }
+                Console.WriteLine(e);
+                return StatusCode(500);
             }
         }
 
@@ -73,5 +66,15 @@ namespace MPKWrocław.Controllers
         public string LogInDevice { get; set; }
         
         public string LogInIp { get; set; }
+    }
+
+    public class RegisterRequest
+    {
+        public string UserID{ get; set; }
+        public string CreationDate{ get; set; }
+        public string Username{ get; set; }
+        public string Name{ get; set; }
+        public string Password{ get; set; }
+        public string Email{ get; set; }
     }
 }

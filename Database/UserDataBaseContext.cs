@@ -6,7 +6,7 @@ namespace MPKWrocław.Database;
 public class UserDataBaseContext : DbContext
 {
     public DbSet<UserModel> UserModels { get; set; }
-    public DbSet<UserLogins> UserLogins { get; set; }
+    public DbSet<UserLogin> UserLogins { get; set; }
 
     public UserDataBaseContext(DbContextOptions<UserDataBaseContext> options)
         : base(options)
@@ -15,16 +15,9 @@ public class UserDataBaseContext : DbContext
     
     protected override void OnConfiguring(DbContextOptionsBuilder optionsBuilder)
     {
-        var cpath = Directory.GetCurrentDirectory();
-        if (!Directory.Exists(cpath + "/database"))
-            Directory.CreateDirectory(cpath + "/database");
-        cpath += "/database";
-        if (!File.Exists(cpath + "/user.sqlite"))
-            File.Create(cpath + "/user.sqlite").Close();
-
-        optionsBuilder
-            .UseSqlite($"Data Source={cpath}/user.sqlite")
-            .ConfigureWarnings(warnings => warnings.Ignore(Microsoft.EntityFrameworkCore.Diagnostics.RelationalEventId.PendingModelChangesWarning));
+        optionsBuilder.LogTo(Console.WriteLine, LogLevel.Information);
+        optionsBuilder.EnableDetailedErrors();
+        optionsBuilder.EnableSensitiveDataLogging();
     }
 
 
@@ -59,7 +52,7 @@ public class UserDataBaseContext : DbContext
             entity.HasKey(um => um.UserID);
         });
 
-        modelBuilder.Entity<UserLogins>(entity =>
+        modelBuilder.Entity<UserLogin>(entity =>
         {
             entity.Property(ul => ul.UserID)
                 .HasColumnName("UserID")
@@ -84,8 +77,8 @@ public class UserDataBaseContext : DbContext
             entity.Property(ul => ul.LogOutTime)
                 .HasColumnName("LogOutTime")
                 .HasColumnType("datetime");
-
-            entity.HasKey(ul => ul.UserID);
+            
+            entity.HasKey(ul => ul.Token);
         });
     }
 }

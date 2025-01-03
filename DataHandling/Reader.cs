@@ -140,7 +140,7 @@ public class Reader
     }
 
     
-    Reader(MpkDatabaseContext dbContext)
+    public Reader(MpkDatabaseContext dbContext)
     {   
         
         if(!Directory.Exists(_localString) || (DateTime.Now - Directory.GetCreationTime(_localString)).Days>1)

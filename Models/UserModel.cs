@@ -10,7 +10,7 @@ public class UserModel
     public string Email;
 }
 
-public class UserLogins
+public class UserLogin
 {
     public Guid UserID;
     public Guid Token;

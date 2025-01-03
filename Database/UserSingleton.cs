@@ -27,7 +27,7 @@ public class UserSingleton
         if (dataModel != null)
         {
             var guid = Guid.NewGuid();
-            _databaseContext.UserLogins.Add(new UserLogins { UserID = dataModel.UserID, Token = guid, LogInDate = DateTime.Now, LogOutTime = DateTime.Now.AddDays(1),LogInDevice = logInDevice, LogInIp = logInIp });
+            _databaseContext.UserLogins.Add(new UserLogin { UserID = dataModel.UserID, Token = guid, LogInDate = DateTime.Now, LogOutTime = DateTime.Now.AddDays(1),LogInDevice = logInDevice, LogInIp = logInIp });
             _databaseContext.SaveChanges();
             return guid;
         }

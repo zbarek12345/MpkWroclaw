@@ -38,6 +38,12 @@ public class MapController : ControllerBase
         return Ok(_singleton.departuresClosestTen(stopId, page));
     }
     
+    [HttpGet("getShape/{trip_id}")]
+    public IActionResult getShape(string trip_id) 
+    {
+        return Ok(_singleton.getShape(trip_id));
+    }
+    
     [HttpGet("stops/info")]
     public IActionResult GetStopsInfo()
     {

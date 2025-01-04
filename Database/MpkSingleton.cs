@@ -64,9 +64,11 @@ public class MpkSingleton
     public string departuresClosestTen(int stop_id, int page = 1)
     {
         int pageSize = 10; // Number of departures per page
-    
+
+        var availableServices = _databaseContext.Calendars.ToList().Where(r => r.availableToday()).Select(s => s.service_id);
+        
         var departures = _databaseContext.StopTimes
-            .Where(st => st.stop_id == stop_id) // Filter StopTimes by stop_id
+            .Where(st => st.stop_id == stop_id && st.departure_time > MpkDataModels.Hour.Now()) // Filter StopTimes by stop_id
             .Join(
                 _databaseContext.Trips,
                 stopTime => stopTime.trip_id,   // Join StopTimes.trip_id to Trips.trip_id
@@ -75,7 +77,9 @@ public class MpkSingleton
                 {
                     stopTime.departure_time,
                     trip.route_id,
-                    trip.trip_headsign
+                    trip.trip_headsign,
+                    trip.trip_id,
+                    trip.service_id
                 }
             )
             .OrderBy(result => result.departure_time) // Sort by departure time
@@ -92,7 +96,18 @@ public class MpkSingleton
         return JsonSerializer.Serialize(departures);
     }
 
-    
+    public string getShape(string trip_id)
+    {
+        var shapeID = _databaseContext.Trips.First(trip => trip.trip_id == trip_id).shape_id; 
+        var shape = _databaseContext.Shapes.Where( s => s.shape_id == shapeID) 
+            .Select(result => new
+            {
+                Latitude = result.shape_pt_lat.ToString(),
+                Longitude = result.shape_pt_lon.ToString(),
+            })
+            .ToList();
+        return JsonSerializer.Serialize(shape);
+    }
     public List<string> getRoutesForStop(int stop_id)
     {
         var trips = _databaseContext.StopTimes.Where(e => e.stop_id == stop_id).Select(t => t.trip_id).ToList();

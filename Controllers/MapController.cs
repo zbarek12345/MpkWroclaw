@@ -3,13 +3,13 @@ using MPKWrocław.Database;
 
 namespace MPKWrocław.Controllers;
 
-[Route("mapApi/")]
-public class MapApiController : ControllerBase
+[Route("api/[controller]")]
+public class MapController : ControllerBase
 {   
     private readonly MpkSingleton _singleton;
 
     // Constructor injected via DI
-    public MapApiController(MpkSingleton singleton)
+    public MapController(MpkSingleton singleton)
     {
         _singleton = singleton;
     }

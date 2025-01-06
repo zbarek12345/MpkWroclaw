@@ -438,9 +438,9 @@ public class MpkDatabaseContext:DbContext
                 .WithMany(s => s.Trips)  // Calendar ma odniesienie do Trips
                 .HasForeignKey(a => a.service_id);  // Określamy klucz obcy w Trips
 
-            // entity.HasMany(a => a.StopTimes) // Trips ma wiele powiązanych StopTimes
-            //     .WithMany(s => s.Trips);  // StopTimes odnosi się do jednego Trips
-            //       // Określamy klucz obcy w Trips
+            entity.HasMany(a => a.StopTimes) // Trips ma wiele powiązanych StopTimes
+                .WithMany(s => s.Trips);  // StopTimes odnosi się do jednego Trips
+ 
 
             // entity.HasOne(t => t.Shapes) // Trip has one Shape
             //     .WithMany(s => s.Trips) // Shape has many Trips

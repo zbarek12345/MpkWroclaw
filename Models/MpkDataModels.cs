@@ -416,11 +416,11 @@ public class MpkDataModels
         public int drop_off_type;
         
         // public Stops Stops { get; set; }
-        // public ICollection<Trips> Trips { get; set; }
+        public ICollection<Trips> Trips { get; set; }
 
         public static implicit operator Stop_Times(MPkDataModelsSimplified.Stop_Times a) => new Stop_Times{
             trip_id = a.trip_id, arrival_time = a.arrival_time, departure_time = a.departure_time, stop_id = a.stop_id,
-            stop_sequence = a.stop_sequence, pickup_type = a.pickup_type, drop_off_type = a.drop_off_type
+            stop_sequence = a.stop_sequence, pickup_type = a.pickup_type, drop_off_type = a.drop_off_type, Trips = null
         };
     }
 
@@ -454,14 +454,14 @@ public class MpkDataModels
        
         // public Routes Routes { get; set; }
         public Calendar Calendar { get; set; }
-        // public ICollection<Stop_Times> StopTimes { get; set; }
+        public ICollection<Stop_Times> StopTimes { get; set; }
         // public virtual Shapes Shapes { get; set; }
         public Variants Variants { get; set; }
 
         public static implicit operator Trips(MPkDataModelsSimplified.Trips a) => new Trips {
             route_id = a.route_id, service_id = a.service_id, trip_id = a.trip_id,
             trip_headsign = a.trip_headsign, direction_id = a.direction_id, shape_id = a.shape_id,
-            brigade_id = a.brigade_id, vehicle_id = a.vehicle_id, variant_id = a.variant_id, Calendar = null, Variants = null
+            brigade_id = a.brigade_id, vehicle_id = a.vehicle_id, variant_id = a.variant_id, Calendar = null, StopTimes = null, Variants = null
         };
     }
 

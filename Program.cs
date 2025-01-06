@@ -69,9 +69,6 @@ var cpath = Path.Combine(Directory.GetCurrentDirectory(),"database","sql");
 builder.Services.AddDbContext<MpkDatabaseContext>(options =>
     options.UseSqlite($"Data Source={Path.Combine(cpath, "mpk.sqlite")}"));
 
-builder.Services.AddDbContext<UserDataBaseContext>(options =>
-    options.UseSqlite($"Data Source={Path.Combine(cpath, "user.sqlite")}"));
-
 
 
 builder.Services.AddScoped<MpkSingleton>();

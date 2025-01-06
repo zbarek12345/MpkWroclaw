@@ -1,4 +1,5 @@
 ﻿using System.Text.Json;
+using MPKWrocław.Models;
 
 namespace MPKWrocław.Database;
 
@@ -60,7 +61,7 @@ public class MpkSingleton
         
         return JsonSerializer.Serialize(departures);
     }
-
+    
     public string departuresClosestTen(int stop_id, int page = 1)
     {
         int pageSize = 10; // Number of departures per page
@@ -84,6 +85,7 @@ public class MpkSingleton
             )
             .OrderBy(result => result.departure_time) // Sort by departure time
             .Skip((page - 1) * pageSize) // Skip previous pages
+            .Distinct()
             .Take(pageSize) // Take only 10 results
             .Select(result => new
             {

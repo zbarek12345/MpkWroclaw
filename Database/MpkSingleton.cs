@@ -90,9 +90,10 @@ public class MpkSingleton
             .Take(pageSize) // Take only 10 results
             .Select(result => new
             {
-                DepartureTime = result.departure_time,
+                DepartureTime = result.departure_time.ToString(),
                 RouteId = result.route_id,
-                TripHeadsign = result.trip_headsign
+                TripHeadsign = result.trip_headsign,
+                TripId = result.trip_id
             })
             .ToList();
     

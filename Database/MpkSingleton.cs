@@ -30,6 +30,7 @@ public class MpkSingleton
                     TripHeadsign = trip.trip_headsign
                 }
             )
+            .Distinct()
             .ToList();
         
         return JsonSerializer.Serialize(vehicles);

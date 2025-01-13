@@ -1,6 +1,6 @@
 using Microsoft.EntityFrameworkCore;
 using MPKWrocław.Database;
-using MPKWrocław.DataHandling;
+using MPKWrocław;
 using MPKWrocław.Models;
 
 var builder = WebApplication.CreateBuilder(args);

@@ -55,7 +55,43 @@ namespace MPKWrocław.Controllers
                 return StatusCode(500);
             }
         }
+        
+        [HttpGet("getUserData")]
+        public async Task<IActionResult> GetUserData()
+        {
+            if (!verifyGuid(Request.Headers["Authorization"]))
+                return StatusCode(401);
+            return Ok(_userSingleton.getUserData(Guid.Parse(Request.Headers["Authorization"].ToString().Substring("Bearer ".Length).Trim())));
+        }
+            
+        private class userSetData{
+            public String Username, Email;
+        }
 
+        public async Task<IActionResult> SetUserData(String serializedData)
+        {
+            if (!verifyGuid(Request.Headers["Authorization"]))
+                return StatusCode(401);
+            
+            userSetData data = JsonSerializer.Deserialize<userSetData>(serializedData);
+            var token = Guid.Parse(Request.Headers["Authorization"].ToString().Substring("Bearer ".Length).Trim());
+            _userSingleton.setUserData(token, data.Username, data.Email);
+            return Ok();
+        }
+        
+        bool verifyGuid(string authHeader)
+        {
+            var guid = authHeader.ToString().Substring("Bearer ".Length).Trim();
+
+            try
+            {
+                return _userSingleton.VerifyToken(Guid.Parse(guid));
+            }
+            catch (Exception e)
+            {
+                return false;
+            }
+        }
     }
 
     public class LoginRequest

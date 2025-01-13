@@ -152,7 +152,7 @@ public class MpkSingleton
 
         return JsonSerializer.Serialize(infoList);
     }
-
+    
     // public string getNextVehicles(int stop_id, int count)
     // {
     //     var trips = _databaseContext.StopTimes.Where(e => e.stop_id == stop_id && e.arrival_time>=).Select(t => t.trip_id).ToList();

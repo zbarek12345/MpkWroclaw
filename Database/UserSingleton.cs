@@ -1,4 +1,6 @@
-﻿using Microsoft.EntityFrameworkCore;
+﻿using System.Text.Json;
+using System.Text.Json.Serialization;
+using Microsoft.EntityFrameworkCore;
 using Microsoft.EntityFrameworkCore.Internal;
 using MPKWrocław.Models;
 
@@ -54,6 +56,33 @@ public class UserSingleton
             return false;
         loginData.LogOutTime = DateTime.Now.AddDays(1);
         context.SaveChanges();
+        return true;
+    }
+
+    public String getUserData(Guid token)
+    {
+        var userData = _databaseContext.UserModels.Join(
+            _databaseContext.UserLogins,
+            user => user.UserID, // Matching user.UserID
+            login => login.UserID, // To login.UserID
+            (user, login) => new
+            {
+                user.Username,
+                user.Email,
+                login.LogInDate,
+                login.LogInDevice
+            }
+        );
+        return JsonSerializer.Serialize(userData);
+    }
+
+    public Boolean setUserData(Guid token, string username, string email)
+    {
+        var loginToken = _databaseContext.UserLogins.First(ul => ul.Token == token);
+        var userModel = _databaseContext.UserModels.First(um => um.UserID == loginToken.UserID);
+        userModel.Username = username;
+        userModel.Email = email;
+        _databaseContext.SaveChanges();
         return true;
     }
 

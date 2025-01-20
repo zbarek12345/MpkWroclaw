@@ -10,6 +10,7 @@
         <PackageReference Include="EntityFramework" Version="6.5.1" />
         <PackageReference Include="Microsoft.AspNetCore.OpenApi" Version="8.0.4"/>
         <PackageReference Include="Microsoft.EntityFrameworkCore.Sqlite" Version="9.0.0" />
+        <PackageReference Include="NUnit" Version="4.3.2" />
         <PackageReference Include="Swashbuckle.AspNetCore" Version="6.4.0"/>
     </ItemGroup>
 

@@ -132,4 +132,17 @@ public class UserSingleton
             s += (char)new Random().Next('a', 'z');
         return s;
     }
+
+    public bool setPassword(Guid token, string oldPassword, string newPassword)
+    {
+        var userID = _databaseContext.UserLogins.First(ul => ul.Token == token).UserID;
+        var userData = _databaseContext.UserModels.First(u => u.UserID == userID);
+
+        if (userData.Password != oldPassword)
+            return false;
+
+        userData.Password = newPassword;
+        _databaseContext.SaveChanges();
+        return true;
+    }
 }

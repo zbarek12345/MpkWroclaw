@@ -1,11 +1,23 @@
 using System.Text.Json;
-using System.Text.Json.Serialization;
 using Microsoft.AspNetCore.Mvc;
 using MPKWrocław.Database;
 using MPKWrocław.Models;
+using NUnit.Framework;
+using NUnit.Framework.Legacy;
 
 namespace MPKWrocław.Controllers
 {
+    class test
+    {
+        [Test]
+        void runTest()
+        {
+            UserController uc = new UserController(new UserSingleton());
+            ClassicAssert.Null(uc.GetUserData());
+        }
+    }
+    
+    
     [ApiController]
     [Route("api/[controller]")]
     public class UserController : ControllerBase
@@ -78,10 +90,22 @@ namespace MPKWrocław.Controllers
             _userSingleton.setUserData(token, data.Username, data.Email);
             return Ok();
         }
+
+        public async Task<IActionResult> SetUserPassword(String oldPassword, String newPassword)
+        {
+            if (!verifyGuid(Request.Headers["Authorization"]))
+                return StatusCode(401);
+            
+            var token = Guid.Parse(Request.Headers["Authorization"].ToString().Substring("Bearer ".Length).Trim());
+            var success = _userSingleton.setPassword(token, oldPassword, newPassword);
+            if(success)
+                return Ok();
+            return StatusCode(401);
+        }
         
         bool verifyGuid(string authHeader)
         {
-            var guid = authHeader.ToString().Substring("Bearer ".Length).Trim();
+            var guid = authHeader.Substring("Bearer ".Length).Trim();
 
             try
             {

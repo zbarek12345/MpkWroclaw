@@ -86,44 +86,44 @@ public class UserSingleton
         return true;
     }
 
-    // public static void Main()
-    // {
-    //     DbContextOptionsBuilder<UserDataBaseContext> options = new DbContextOptionsBuilder<UserDataBaseContext>();
-    //     var cpath = "C:\\Users\\jakub\\RiderProjects\\MpkWroclaw";
-    //     if (!Directory.Exists(cpath + "/database/sql"))
-    //         Directory.CreateDirectory(cpath + "/database/sql");
-    //     cpath += "/database/sql";
-    //     Console.WriteLine(cpath);
-    //     if (!File.Exists(cpath + "/user.sqlite"))
-    //         File.Create(cpath + "/user.sqlite");
-    //     options.UseSqlite($"Data Source={cpath}/user.sqlite");
-    //     UserSingleton userSingleton = new UserSingleton(options.Options);
-    //     
-    //     for(int i = 0;i<1e5;i++)
-    //     {
-    //         var password = randomString(26);
-    //         var username = randomString(10);
-    //         userSingleton.AddUser(new UserModel
-    //         {
-    //             UserID = Guid.NewGuid(),
-    //             CreationDate = DateTime.Now,
-    //             Username = username,
-    //             Password = password,
-    //             Name = randomString(4),
-    //             Email = randomString(2)+"@"+randomString(10)+"."+randomString(3),
-    //         });
-    //         
-    //         var guid = userSingleton.LoginUser(username, password, "mac", "192.168.6.232");
-    //         
-    //         var success = userSingleton.VerifyToken(guid);
-    //
-    //         if (!success)
-    //         {
-    //             Console.WriteLine("Login Failed");
-    //             throw new Exception("SHIIT");
-    //         }
-    //     }
-    // }
+    public static void Main()
+    {
+        DbContextOptionsBuilder<UserDataBaseContext> options = new DbContextOptionsBuilder<UserDataBaseContext>();
+        var cpath = "/Users/jakubwalica/RiderProjects/MpkWroclaw";
+        if (!Directory.Exists(cpath + "/database/sql"))
+            Directory.CreateDirectory(cpath + "/database/sql");
+        cpath += "/database/sql";
+        Console.WriteLine(cpath);
+        if (!File.Exists(cpath + "/user.sqlite"))
+            File.Create(cpath + "/user.sqlite");
+        options.UseSqlite($"Data Source={cpath}/user.sqlite");
+        UserSingleton userSingleton = new UserSingleton();
+        
+        for(int i = 0;i<1e5;i++)
+        {
+            var password = randomString(26);
+            var username = randomString(10);
+            userSingleton.AddUser(new UserModel
+            {
+                UserID = Guid.NewGuid(),
+                CreationDate = DateTime.Now,
+                Username = username,
+                Password = password,
+                Name = randomString(4),
+                Email = randomString(2)+"@"+randomString(10)+"."+randomString(3),
+            });
+            
+            var guid = userSingleton.LoginUser(username, password, "mac", "192.168.6.232");
+            
+            var success = userSingleton.VerifyToken(guid);
+    
+            if (!success)
+            {
+                Console.WriteLine("Login Failed");
+                throw new Exception("SHIIT");
+            }
+        }
+    }
 
     private static String randomString(int size)
     {
@@ -135,14 +135,15 @@ public class UserSingleton
 
     public bool setPassword(Guid token, string oldPassword, string newPassword)
     {
-        var userID = _databaseContext.UserLogins.First(ul => ul.Token == token).UserID;
-        var userData = _databaseContext.UserModels.First(u => u.UserID == userID);
+        using var context = _db.CreateDbContext();
+        var userID = context.UserLogins.First(ul => ul.Token == token).UserID;
+        var userData = context.UserModels.First(u => u.UserID == userID);
 
         if (userData.Password != oldPassword)
             return false;
 
         userData.Password = newPassword;
-        _databaseContext.SaveChanges();
+        context.SaveChanges();
         return true;
     }
 }

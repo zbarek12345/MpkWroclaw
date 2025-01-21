@@ -27,7 +27,7 @@ var cpath = Path.Combine(Directory.GetCurrentDirectory(),"database","sql");
             new DbContextOptionsBuilder<MpkDatabaseContext>().UseSqlite($"Data Source={Path.Combine(cpath, "mpk.sqlite")}");
         var mpk = new MpkDatabaseContext(dbBuilder.Options);
         mpk.Database.Migrate();
-        var reader = new Reader(mpk);
+        //var reader = new Reader(mpk);
         mpk.Dispose();
     }
     

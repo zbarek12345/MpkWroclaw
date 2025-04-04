@@ -41,7 +41,7 @@ namespace MPKWrocław.Controllers
             return Ok(token.ToString());
         }
 
-// POST api/user/add
+        // POST api/user/add
         [HttpPost("add")]
         public async Task<IActionResult> AddUser()
         {
@@ -90,18 +90,41 @@ namespace MPKWrocław.Controllers
             _userSingleton.setUserData(token, data.Username, data.Email);
             return Ok();
         }
-
-        public async Task<IActionResult> SetUserPassword(String oldPassword, String newPassword)
+        public class ChangePassword()
         {
-            if (!verifyGuid(Request.Headers["Authorization"]))
-                return StatusCode(401);
-            
-            var token = Guid.Parse(Request.Headers["Authorization"].ToString().Substring("Bearer ".Length).Trim());
-            var success = _userSingleton.setPassword(token, oldPassword, newPassword);
-            if(success)
-                return Ok();
-            return StatusCode(401);
+            public string OldPassword { get; set; }
+            public string NewPassword { get; set; }
         }
+        
+        [HttpPost("SetUserPassword")]
+        public async Task<IActionResult> SetUserPassword()
+        {
+            try
+            {
+                if (!verifyGuid(Request.Headers["Authorization"]))
+                    return StatusCode(401);
+                
+                using StreamReader streamReader = new StreamReader(Request.Body);
+                string json = await streamReader.ReadToEndAsync();
+                
+                var changePasswordRequest = JsonSerializer.Deserialize<ChangePassword>(json);
+                
+                var token = Guid.Parse(Request.Headers["Authorization"].ToString().Substring("Bearer ".Length).Trim());
+
+                var success = _userSingleton.setPassword(token, changePasswordRequest.OldPassword, changePasswordRequest.NewPassword);
+        
+                if (success)
+                    return Ok();
+        
+                return StatusCode(401);
+            }
+            catch (Exception e)
+            {
+                Console.WriteLine(e);
+                return StatusCode(500);
+            }
+        }
+
         
         bool verifyGuid(string authHeader)
         {

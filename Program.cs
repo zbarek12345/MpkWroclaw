@@ -7,7 +7,7 @@ var builder = WebApplication.CreateBuilder(args);
 
 // Add services to the container.
 // Learn more about configuring Swagger/OpenAPI at https://aka.ms/aspnetcore/swashbuckle
-var cpath = Path.Combine(Directory.GetCurrentDirectory(),"database","sql");
+String cpath = Path.Combine(Directory.GetCurrentDirectory(),"database","sql");
 
 /// Existance of databases is verified
 #region init
@@ -15,53 +15,26 @@ var cpath = Path.Combine(Directory.GetCurrentDirectory(),"database","sql");
 {
     if (!Directory.Exists(cpath))
         Directory.CreateDirectory(cpath);
-
-    if (!File.Exists(Path.Combine(cpath, "mpk.sqlite")))
-    {
-        using (FileStream fs = File.Create(Path.Combine(cpath, "mpk.sqlite")))
-        {
-            // Ensure the file is created and closed properly
-        }
-
-        var dbBuilder =
-            new DbContextOptionsBuilder<MpkDatabaseContext>().UseSqlite($"Data Source={Path.Combine(cpath, "mpk.sqlite")}");
-        var mpk = new MpkDatabaseContext(dbBuilder.Options);
-        mpk.Database.Migrate();
-        var reader = new Reader(mpk);
-        mpk.Dispose();
-    }
     
-    if (!File.Exists(Path.Combine(cpath, "user.sqlite")))
+    var dbBuilder =
+        new DbContextOptionsBuilder<MpkDatabaseContext>().UseSqlite(
+            $"Data Source={Path.Combine(cpath, "mpk.sqlite")}");
+    using (var mpk = new MpkDatabaseContext(dbBuilder.Options))
     {
-        // Create the SQLite file
-        using (FileStream fs = File.Create(Path.Combine(cpath, "user.sqlite")))
-        {
-            // Ensure the file is created and closed properly
-        }
-
-        // Set up the database context options
-        var dbBuilder2 = new DbContextOptionsBuilder<UserDataBaseContext>()
-            .UseSqlite($"Data Source={Path.Combine(cpath, "user.sqlite")}");
-
-        // Create the database context
-        using (var user = new UserDataBaseContext(dbBuilder2.Options))
-        {
-            // Apply migrations to create the database schema
-            user.Database.EnsureCreated();
-
-            UserModel a = new UserModel
-            {
-                CreationDate = DateTime.Now,
-                Email = "aaa@aaa.com",
-                Name = "aaa",
-                Username = "a",
-                Password = "aaa",
-                UserID = Guid.NewGuid()
-            };
-            user.UserModels.Add(a);
-        }
+        mpk.Database.EnsureCreated();
+        mpk.SaveChanges();
     }
-    
+    // Set up the database context options
+    var dbBuilder2 = new DbContextOptionsBuilder<UserDataBaseContext>()
+        .UseSqlite($"Data Source={Path.Combine(cpath, "user.sqlite")}");
+
+    // Create the database context
+    using (var user = new UserDataBaseContext(dbBuilder2.Options))
+    {
+        // Apply migrations to create the database schema
+        user.Database.EnsureCreated();
+        user.SaveChanges();
+    }
 }
 
 #endregion

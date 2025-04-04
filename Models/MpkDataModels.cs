@@ -1,4 +1,6 @@
-﻿using Microsoft.VisualBasic.CompilerServices;
+﻿using System.ComponentModel.DataAnnotations;
+using System.ComponentModel.DataAnnotations.Schema;
+using Microsoft.VisualBasic.CompilerServices;
 
 namespace MPKWrocław.Models;
 
@@ -7,11 +9,11 @@ public class MPkDataModelsSimplified
     public class Agency
     {
         public int agency_id;
-        public string agency_lang;
         public string agency_name;
-        public string agency_phone;
-        public string agency_timezone;
         public string agency_url;
+        public string agency_timezone;
+        public string agency_phone;
+        public string agency_lang;
     }
 
     public class Calendar
@@ -115,96 +117,96 @@ public class MpkDataModels
         public int Hours;
         public int Minutes;
         public int Seconds;
-        
-        public static Hour FromString(string source)
-        {
-            var hour = int.Parse(source.Substring(0, 2));
-            var minute = int.Parse(source.Substring(3, 2));
-            var second = int.Parse(source.Substring(6, 2));
 
-            return new Hour { Hours = hour, Minutes = minute, Seconds = second };
-        }
+    public static Hour FromString(string source)
+    {
+        var hour = int.Parse(source.Substring(0, 2));
+        var minute = int.Parse(source.Substring(3, 2));
+        var second = int.Parse(source.Substring(6, 2));
 
-        public static Hour Now()
-        {
-            var time = DateTime.Now;
-            return new Hour
-            {
-                Hours = time.Hour,
-                Minutes = time.Minute,
-                Seconds = time.Second
-            };
-        }
-
-        #region Arithmetic Operators
-        
-        public static bool operator<(Hour a, Hour b)
-        {
-            // Comparison prioritizes hours, then minutes, then seconds
-            if (a.Hours > b.Hours)
-                return true;
-            if (a.Hours == b.Hours && a.Minutes > b.Minutes)
-                return true;
-            if (a.Hours == b.Hours && a.Minutes == b.Minutes && a.Seconds > b.Seconds)
-                return true;
-
-            return false;
-        }
-        
-        public static bool operator>(Hour a, Hour b)
-        {
-            // Comparison prioritizes hours, then minutes, then seconds
-            if (a.Hours < b.Hours)
-                return true;
-            if (a.Hours == b.Hours && a.Minutes < b.Minutes)
-                return true;
-            if (a.Hours == b.Hours && a.Minutes == b.Minutes && a.Seconds < b.Seconds)
-                return true;
-
-            return false;
-        }
-        
-        public static bool operator ==(Hour a, Hour b)
-        {
-            if (ReferenceEquals(a, b)) return true; // Both are null or same instance
-            if (ReferenceEquals(a, null) || ReferenceEquals(b, null)) return false; // One is null
-            // Compare actual properties
-            return a.Minutes == b.Minutes && a.Hours == a.Hours && a.Seconds == a.Seconds; // Adjust based on your properties
-        }
-
-        public static bool operator !=(Hour a, Hour b)
-        {
-            return !(a == b); // Use the equality operator
-        }
-
-        public static bool operator >=(Hour a, Hour b)
-        {
-            return a > b || a == b;
-        }
-        
-        public static bool operator <=(Hour a, Hour b)
-        {
-            return a < b || a == b;
-        }
-
-        
-        #endregion
-        public static string fillZeroes(int value, int desiredLength)
-        {
-            string s = value.ToString();
-
-            while (s.Length < desiredLength)
-            {
-                s = '0' + s;
-            }
-            return s;
-        }
-        
-        public override string ToString()
-        {
-            return fillZeroes(Hours, 2) + ":" + fillZeroes(Minutes, 2) + ":" + fillZeroes(Seconds, 2);
-        }
+        return new Hour { Hours = hour, Minutes = minute, Seconds = second };
     }
+
+    public static Hour Now()
+    {
+        var time = DateTime.Now;
+        return new Hour
+        {
+            Hours = time.Hour,
+            Minutes = time.Minute,
+            Seconds = time.Second
+        };
+    }
+
+    #region Arithmetic Operators
+    
+    public static bool operator<(Hour a, Hour b)
+    {
+        // Comparison prioritizes hours, then minutes, then seconds
+        if (a.Hours > b.Hours)
+            return true;
+        if (a.Hours == b.Hours && a.Minutes > b.Minutes)
+            return true;
+        if (a.Hours == b.Hours && a.Minutes == b.Minutes && a.Seconds > b.Seconds)
+            return true;
+
+        return false;
+    }
+    
+    public static bool operator>(Hour a, Hour b)
+    {
+        // Comparison prioritizes hours, then minutes, then seconds
+        if (a.Hours < b.Hours)
+            return true;
+        if (a.Hours == b.Hours && a.Minutes < b.Minutes)
+            return true;
+        if (a.Hours == b.Hours && a.Minutes == b.Minutes && a.Seconds < b.Seconds)
+            return true;
+
+        return false;
+    }
+    
+    public static bool operator ==(Hour a, Hour b)
+    {
+        if (ReferenceEquals(a, b)) return true; // Both are null or same instance
+        if (ReferenceEquals(a, null) || ReferenceEquals(b, null)) return false; // One is null
+        // Compare actual properties
+        return a.Minutes == b.Minutes && a.Hours == a.Hours && a.Seconds == a.Seconds; // Adjust based on your properties
+    }
+
+    public static bool operator !=(Hour a, Hour b)
+    {
+        return !(a == b); // Use the equality operator
+    }
+
+    public static bool operator >=(Hour a, Hour b)
+    {
+        return a > b || a == b;
+    }
+    
+    public static bool operator <=(Hour a, Hour b)
+    {
+        return a < b || a == b;
+    }
+
+    
+    #endregion
+    public static string fillZeroes(int value, int desiredLength)
+    {
+        string s = value.ToString();
+
+        while (s.Length < desiredLength)
+        {
+            s = '0' + s;
+        }
+        return s;
+    }
+    
+    public override string ToString()
+    {
+        return fillZeroes(Hours, 2) + ":" + fillZeroes(Minutes, 2) + ":" + fillZeroes(Seconds, 2);
+    }
+}
 
     public class Date
     {
@@ -249,35 +251,38 @@ public class MpkDataModels
         }
         
     }
-    
+
+
     public class Agency
     {
-        public int agency_id;
-        public string agency_lang;
-        public string agency_name;
-        public string agency_phone;
-        public string agency_timezone;
-        public string agency_url;
-        
-        public ICollection<Routes> Routes { get; set; }
+        [Key]
+        public int agency_id { get; set; }
+        public string agency_lang { get; set; }
+        public string agency_name { get; set; }
+        public string agency_phone { get; set; }
+        public string agency_timezone { get; set; }
+        public string agency_url { get; set; }
 
-        public static implicit operator Agency(MPkDataModelsSimplified.Agency a) => new Agency
-            { agency_id = a.agency_id, agency_lang = a.agency_lang, agency_name = a.agency_name, agency_phone = a.agency_phone, agency_timezone = a.agency_timezone, agency_url = a.agency_url, Routes = null };
-
+        public virtual ICollection<Routes> Routes { get; set; } = new List<Routes>();
     }
 
     public class Calendar
     {
-        public int service_id;
-        public int monday;
-        public int tuesday;
-        public int wednesday;
-        public int thursday;
-        public int friday;
-        public int saturday;
-        public int sunday;
-        public Date start_date;
-        public Date end_date;
+        [Key]
+        public int service_id { get; set; }
+        public int monday { get; set; }
+        public int tuesday { get; set; }
+        public int wednesday { get; set; }
+        public int thursday { get; set; }
+        public int friday { get; set; }
+        public int saturday { get; set; }
+        public int sunday { get; set; }
+        public Date start_date { get; set; }
+        public Date end_date { get; set; }
+
+        public virtual ICollection<Calendar_Dates> CalendarDates { get; set; } = new List<Calendar_Dates>();
+        public virtual ICollection<Trips> Trips { get; set; } = new List<Trips>();
+
         public bool availableToday()
         {
             var day = DateTime.Now.DayOfWeek;
@@ -301,192 +306,180 @@ public class MpkDataModels
             }
             return false;
         }
-        
-        public ICollection<Calendar_Dates> CalendarDates { get; set; }
-        public ICollection<Trips> Trips { get; set; }
-
-        public static implicit operator Calendar(MPkDataModelsSimplified.Calendar a) => new Calendar
-        {
-            service_id = a.service_id, monday = a.monday, tuesday = a.tuesday, wednesday = a.wednesday,
-            thursday = a.thursday, friday = a.friday, saturday = a.saturday, sunday = a.sunday, start_date = a.start_date,
-            end_date = a.end_date,
-            CalendarDates = null, Trips = null
-        };
     }
 
     public class Calendar_Dates
     {
-        public int service_id;
-        public Date date;
-        public int exception_type;
-        
-        public Calendar Calendar { get; set; }
+        [Key]
+        [Column(Order = 0)]
+        public int service_id { get; set; }
+        [Key]
+        [Column(Order = 1)]
+        public Date date { get; set; }
+        public int exception_type { get; set; }
 
-        public static implicit operator Calendar_Dates(MPkDataModelsSimplified.Calendar_Dates a) => new Calendar_Dates{
-            date = a.date, exception_type = a.exception_type, service_id = a.service_id, Calendar = null
-        };
+        [ForeignKey("service_id")]
+        public virtual Calendar Calendar { get; set; }
     }
 
     public class Contracts_Ext
     {
-        public string contract_id;
-        public Date contract_conclusion_date;
-        public Date contract_start_date;
-        public Date contract_end_date;
-        public string contract_number;
-        public string contract_short_name;
-        public string contract_operators_name;
-        public string contract_desc;
-        public string contract_op_id;
+        [Key]
+        public string contract_id { get; set; }
+        public Date contract_conclusion_date { get; set; }
+        public Date contract_start_date { get; set; }
+        public Date contract_end_date { get; set; }
+        public string contract_number { get; set; }
+        public string contract_short_name { get; set; }
+        public string contract_operators_name { get; set; }
+        public string contract_desc { get; set; }
+        public string contract_op_id { get; set; }
     }
 
     public class Control_Stops
     {
-        public int variant_id;
-        public int stop_id;
+        [Key]
+        [Column(Order = 0)]
+        public int variant_id { get; set; }
+        [Key]
+        [Column(Order = 1)]
+        public int stop_id { get; set; }
     }
 
     public class Feed_Info
-    {   
-        public string feed_publisher_name;
-        public string feed_publisher_url;
-        public string feed_lang;
-        public Date feed_start_date;
-        public Date feed_end_date;
+    {
+        [Key]
+        public string feed_publisher_name { get; set; }
+        public string feed_publisher_url { get; set; }
+        public string feed_lang { get; set; }
+        public Date feed_start_date { get; set; }
+        public Date feed_end_date { get; set; }
     }
-    
+
     public class Route_Types
     {
-        public int route_type2_id;
-        public string route_type2_name;
-            
-        public ICollection<Routes> Routes { get; set; }
-        
-        public static implicit operator Route_Types(MPkDataModelsSimplified.Route_Types a) => new Route_Types{
-            route_type2_id = a.route_type2_id, route_type2_name = a.route_type2_name, Routes = null
-        };
+        [Key]
+        public int route_type2_id { get; set; }
+        public string route_type2_name { get; set; }
+
+        public virtual ICollection<Routes> Routes { get; set; } = new List<Routes>();
     }
 
     public class Routes
     {
-        public string route_id;
-        public int agency_id;
-        public string route_short_name;
-        public string route_long_name;
-        public string route_desc;
-        public int route_type;
-        public int route_type2_id;
-        public Date valid_from;
-        public Date valid_until;
+        [Key]
+        public string route_id { get; set; }
+        public int agency_id { get; set; }
+        public string route_short_name { get; set; }
+        public string route_long_name { get; set; }
+        public string route_desc { get; set; }
+        public int route_type { get; set; }
+        public int route_type2_id { get; set; }
+        public Date valid_from { get; set; }
+        public Date valid_until { get; set; }
 
-        public Agency Agency { get; set; }
-        public Route_Types RouteTypes { get; set; }
-        // public ICollection<Trips> Trips { get; set; }
-        public static implicit operator Routes(MPkDataModelsSimplified.Routes a) => new Routes {
-            route_id = a.route_id, agency_id = a.agency_id, route_short_name = a.route_short_name,
-            route_long_name = a.route_long_name,
-            route_desc = a.route_desc, route_type = a.route_type, route_type2_id = a.route_type2_id,
-            valid_from = a.valid_from, valid_until = a.valid_until, Agency = null, RouteTypes = null
-        };
-    }
-
-    public class Shapes
-    {
-        public int shape_id;
-        public string shape_pt_lat;
-        public string shape_pt_lon;
-        public int shape_pt_sequence;
-        
-        // public virtual ICollection<Trips> Trips { get; set; }
-
-        public static implicit operator Shapes(MPkDataModelsSimplified.Shapes a) => new Shapes{
-            shape_id = a.shape_id, shape_pt_lat = a.shape_pt_lat, shape_pt_lon = a.shape_pt_lon,
-            shape_pt_sequence = a.shape_pt_sequence
-        };
+        [ForeignKey("agency_id")]
+        public virtual Agency Agency { get; set; }
+        [ForeignKey("route_type2_id")]
+        public virtual Route_Types RouteTypes { get; set; }
+        public virtual ICollection<Trips> Trips { get; set; } = new List<Trips>();
     }
     
+    public class Shape
+    {
+        [Key]
+        public int shape_id { get; set; }
+
+        public virtual ICollection<Shapes> ShapePoints { get; set; } = new List<Shapes>();
+        public virtual ICollection<Trips> Trips { get; set; } = new List<Trips>();
+    }
+    
+    public class Shapes
+    {
+        public int shape_id { get; set; }
+        public string shape_pt_lat { get; set; }
+        public string shape_pt_lon { get; set; }
+        public int shape_pt_sequence { get; set; }
+
+        [ForeignKey("shape_id")]
+        public virtual Shape Shape { get; set; }
+    }
+
     public class Stop_Times
     {
-        public string trip_id;
-        public Hour arrival_time;
-        public Hour departure_time;
-        public int stop_id;
-        public int stop_sequence;
-        public int pickup_type;
-        public int drop_off_type;
-        
-        // public Stops Stops { get; set; }
-        public ICollection<Trips> Trips { get; set; }
+        [Key]
+        [Column(Order = 0)]
+        public string trip_id { get; set; }
+        [Key]
+        [Column(Order = 1)]
+        public int stop_sequence { get; set; }
+        public Hour arrival_time { get; set; }
+        public Hour departure_time { get; set; }
+        public int stop_id { get; set; }
+        public int pickup_type { get; set; }
+        public int drop_off_type { get; set; }
 
-        public static implicit operator Stop_Times(MPkDataModelsSimplified.Stop_Times a) => new Stop_Times{
-            trip_id = a.trip_id, arrival_time = a.arrival_time, departure_time = a.departure_time, stop_id = a.stop_id,
-            stop_sequence = a.stop_sequence, pickup_type = a.pickup_type, drop_off_type = a.drop_off_type, Trips = null
-        };
+        [ForeignKey("trip_id")]
+        public virtual Trips Trips { get; set; }
+        [ForeignKey("stop_id")]
+        public virtual Stops Stops { get; set; }
     }
 
     public class Stops
     {
-        public int stop_id;
-        public string stop_code;
-        public string stop_name;
-        public string stop_lat;
-        public string stop_lon;
-        
-        // public ICollection<Stop_Times> StopTimes { get; set; }
+        [Key]
+        public int stop_id { get; set; }
+        public string stop_code { get; set; }
+        public string stop_name { get; set; }
+        public string stop_lat { get; set; }
+        public string stop_lon { get; set; }
 
-        public static implicit operator Stops(MPkDataModelsSimplified.Stops a) => new Stops {
-            stop_id = a.stop_id, stop_code = a.stop_code, stop_name = a.stop_name,
-            stop_lat = a.stop_lat, stop_lon = a.stop_lon
-        };
+        public virtual ICollection<Stop_Times> StopTimes { get; set; } = new List<Stop_Times>();
     }
-  
+
     public class Trips
-    {   
-        public string route_id;
-        public int service_id;
-        public string trip_id;
-        public string trip_headsign;
-        public int direction_id;
-        public int shape_id;
-        public int brigade_id;
-        public int vehicle_id;
-        public int variant_id;
-       
-        // public Routes Routes { get; set; }
-        public Calendar Calendar { get; set; }
-        public ICollection<Stop_Times> StopTimes { get; set; }
-        // public virtual Shapes Shapes { get; set; }
-        public Variants Variants { get; set; }
+    {
+        [Key]
+        public string trip_id { get; set; }
+        public string route_id { get; set; }
+        public int service_id { get; set; }
+        public string trip_headsign { get; set; }
+        public int direction_id { get; set; }
+        public int shape_id { get; set; } // References Shape.shape_id
+        public int brigade_id { get; set; }
+        public int vehicle_id { get; set; }
+        public int variant_id { get; set; }
 
-        public static implicit operator Trips(MPkDataModelsSimplified.Trips a) => new Trips {
-            route_id = a.route_id, service_id = a.service_id, trip_id = a.trip_id,
-            trip_headsign = a.trip_headsign, direction_id = a.direction_id, shape_id = a.shape_id,
-            brigade_id = a.brigade_id, vehicle_id = a.vehicle_id, variant_id = a.variant_id, Calendar = null, StopTimes = null, Variants = null
-        };
+        [ForeignKey("route_id")]
+        public virtual Routes Routes { get; set; }
+        [ForeignKey("service_id")]
+        public virtual Calendar Calendar { get; set; }
+        [ForeignKey("shape_id")]
+        public virtual Shape Shape { get; set; } // Updated to reference Shape
+        [ForeignKey("variant_id")]
+        public virtual Variants Variants { get; set; }
+        public virtual ICollection<Stop_Times> StopTimes { get; set; } = new List<Stop_Times>();
     }
+
 
     public class Variants
     {
-        public int variant_id;
-        public bool is_main;
-        public string equiv_main_variant_id;
-        public string join_stop_id;
-        public string disjoin_stop_id;
-        
-        public ICollection<Trips> Trips { get; set; }
+        [Key]
+        public int variant_id { get; set; }
+        public bool is_main { get; set; }
+        public string equiv_main_variant_id { get; set; }
+        public string join_stop_id { get; set; }
+        public string disjoin_stop_id { get; set; }
 
-        public static implicit operator Variants(MPkDataModelsSimplified.Variants a) => new Variants
-        {
-            variant_id = a.variant_id, equiv_main_variant_id = a.equiv_main_variant_id ?? "DEFAULT_VALUE", join_stop_id = a.join_stop_id ?? "DEFAULT_VALUE",
-            disjoin_stop_id = a.disjoin_stop_id ?? "DEFAULT_VALUE", is_main = a.is_main, Trips = null
-        };
+        public virtual ICollection<Trips> Trips { get; set; } = new List<Trips>();
     }
 
     public class Vehicle_Types
     {
-        public int vehicle_type_id;
-        public string vehicle_type_name;
-        public string vehicle_type_description;
-        public string vehicle_type_symbol;
+        [Key]
+        public int vehicle_type_id { get; set; }
+        public string vehicle_type_name { get; set; }
+        public string vehicle_type_description { get; set; }
+        public string vehicle_type_symbol { get; set; }
     }
 }

@@ -16,7 +16,7 @@ public class UserSingleton
     // Public constructor for DI to inject UserDataBaseContext
     public UserSingleton()
     {
-        var path = Path.Combine(Directory.GetCurrentDirectory(),"database","sql", "user.sqlite");;
+        var path = Path.Combine(Directory.GetCurrentDirectory(),"database","sql", "user.sqlite");
         var optionsBuilder = new DbContextOptionsBuilder<UserDataBaseContext>();
         optionsBuilder.UseSqlite($"Data Source={path}");
         _db = new DbContextFactory<UserDataBaseContext>(null, optionsBuilder.Options  ,new DbContextFactorySource<UserDataBaseContext>());

@@ -35,6 +35,58 @@ public class MpkSingleton
         
         return JsonSerializer.Serialize(vehicles);
     }
+    
+    private static int GetDayProperty(MpkDataModels.Calendar calendar, string day)
+    {
+        return day.ToLower() switch
+        {
+            "monday" => calendar.monday,
+            "tuesday" => calendar.tuesday,
+            "wednesday" => calendar.wednesday,
+            "thursday" => calendar.thursday,
+            "friday" => calendar.friday,
+            "saturday" => calendar.saturday,
+            "sunday" => calendar.sunday,
+            _ => 0
+        };
+    }
+    public string departuresForStop(int stop_id, string route_id)
+    {
+        string[] days = {"monday", "tuesday", "wednesday", "thursday", "friday", "saturday", "sunday"};
+
+        var results = new List<object>(); // Store day + arrival times
+
+        var calendarsForDay = _databaseContext.Calendars.ToList();
+        foreach (var day in days)
+        {
+            // Determine which calendar entries match the current day
+            
+            if (!calendarsForDay.Any()) 
+                continue; // Skip if no services on this day
+
+            // Get all service_ids for this day
+            var serviceIds = calendarsForDay.Where(c=>GetDayProperty(c,day) == 1).Select(c => c.service_id).ToList();
+
+            // Fetch arrival times for the given stop and route on this day
+            var arrivalTimes = _databaseContext.StopTimes
+                .Where(st => st.stop_id == stop_id)
+                .Join(
+                    _databaseContext.Trips
+                        .Where(t => serviceIds.Contains(t.service_id) && t.route_id == route_id),
+                    stopTime => stopTime.trip_id,
+                    trip => trip.trip_id,
+                    (stopTime, trip) => stopTime.arrival_time.ToString()
+                )
+                .ToList();
+
+            results.Add(new 
+            {
+                Day = day,
+                ArrivalTimes = arrivalTimes
+            });
+        }
+        return JsonSerializer.Serialize(results);
+    }
 
     public string departuresForVehicle(string route_id, int stop_id)
     {
@@ -103,7 +155,7 @@ public class MpkSingleton
     public string getShape(string trip_id)
     {
         var shapeID = _databaseContext.Trips.First(trip => trip.trip_id == trip_id).shape_id; 
-        var shape = _databaseContext.Shapes.Where( s => s.shape_id == shapeID) 
+        var shape = _databaseContext.ShapePoints.Where( s => s.shape_id == shapeID) 
             .Select(result => new
             {
                 Latitude = result.shape_pt_lat.ToString(),

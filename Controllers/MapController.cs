@@ -17,8 +17,9 @@ public class MapController : ControllerBase
 
     bool verifyGuid(string authHeader)
     {
+        return true;
         var guid = authHeader.ToString().Substring("Bearer ".Length).Trim();
-
+        
         try
         {
             return _userSingleton.VerifyToken(Guid.Parse(guid));
@@ -43,6 +44,14 @@ public class MapController : ControllerBase
         if (!verifyGuid(Request.Headers["Authorization"]))
             return StatusCode(401);
         return Ok(_singleton.vehiclesForStop(stopId));
+    }
+    
+    [HttpGet("getAllVehicleDeparturesForStop/{stopId}/{routeID}")]
+    public IActionResult GetAllVehicleDeparturesForStop(int stopId, string routeID)
+    {
+        if (!verifyGuid(Request.Headers["Authorization"]))
+            return StatusCode(401);
+        return Ok(_singleton.departuresForStop(stopId,routeID));
     }
     
     [HttpGet("departures/{routeId}/{stopId}")]

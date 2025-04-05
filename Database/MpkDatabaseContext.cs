@@ -14,18 +14,36 @@ public class MpkDatabaseContext:DbContext
       public DbSet<MpkDataModels.Feed_Info> FeedInfos { get; set; }
       public DbSet<MpkDataModels.Route_Types> RouteTypes { get; set; }
       public DbSet<MpkDataModels.Routes> Routes { get; set; }
-      public DbSet<MpkDataModels.Shapes> Shapes { get; set; }
+      public DbSet<MpkDataModels.Shape> Shapes { get; set; }
+      
+      public DbSet<MpkDataModels.Shapes> ShapePoints { get; set; }
       public DbSet<MpkDataModels.Stop_Times> StopTimes { get; set; }
       public DbSet<MpkDataModels.Stops> Stops { get; set; }
       public DbSet<MpkDataModels.Trips> Trips { get; set; }
       public DbSet<MpkDataModels.Variants> Variants { get; set; }
       public DbSet<MpkDataModels.Vehicle_Types> VehicleTypes { get; set; }
+      
+      public static bool databaseLock =  false;
+      public static int databaseInstances = 0;
           
     // ... Add other DBSets for each of your models
       public MpkDatabaseContext(DbContextOptions<MpkDatabaseContext> options)
         : base(options)
       {
+            while (databaseLock)
+            {
+                  Thread.Sleep(1000);
+            }
+
+            databaseInstances++;
       }
+
+      public override void Dispose()
+      {
+            base.Dispose();
+            databaseInstances--;
+      }
+      
       protected override void OnConfiguring(DbContextOptionsBuilder optionsBuilder)
       {
         
@@ -166,7 +184,16 @@ public class MpkDatabaseContext:DbContext
                     .HasForeignKey(t => t.route_id);
           });
 
-          // Shapes
+          modelBuilder.Entity<MpkDataModels.Shape>(entity =>
+          {
+                entity.HasKey(s => s.shape_id);
+                entity.Property(s => s.shape_id).HasColumnType("integer");
+
+                entity.HasMany(s => s.ShapePoints)
+                      .WithOne(sp => sp.Shape)
+                      .HasForeignKey(sp => sp.shape_id);
+          });
+
           modelBuilder.Entity<MpkDataModels.Shapes>(entity =>
           {
                 entity.HasKey(s => new { s.shape_id, s.shape_pt_sequence });
@@ -175,8 +202,7 @@ public class MpkDatabaseContext:DbContext
                 entity.Property(s => s.shape_pt_lon).HasColumnType("varchar(32)");
                 entity.Property(s => s.shape_pt_sequence).HasColumnType("integer");
           });
-
-
+          
           // Stop_Times
           modelBuilder.Entity<MpkDataModels.Stop_Times>(entity =>
           {

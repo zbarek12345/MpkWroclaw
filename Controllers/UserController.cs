@@ -7,15 +7,15 @@ using NUnit.Framework.Legacy;
 
 namespace MPKWrocław.Controllers
 {
-    class test
-    {
-        [Test]
-        void runTest()
-        {
-            UserController uc = new UserController(new UserSingleton());
-            ClassicAssert.Null(uc.GetUserData());
-        }
-    }
+    // class test
+    // {
+    //     [Test]
+    //     void runTest()
+    //     {
+    //         UserController uc = new UserController(new UserSingleton());
+    //         ClassicAssert.Null(uc.GetUserData());
+    //     }
+    // }
     
     
     [ApiController]
@@ -43,16 +43,16 @@ namespace MPKWrocław.Controllers
 
         // POST api/user/add
         [HttpPost("add")]
-        public async Task<IActionResult> AddUser()
+        public async Task<IActionResult> AddUser(string serialized)
         {
             try
             {   
-                using StreamReader streamReader = new StreamReader(Request.Body);
-                string json = await streamReader.ReadToEndAsync();
-                var registerRequest = JsonSerializer.Deserialize<RegisterRequest>(json);
+                //using StreamReader streamReader = new StreamReader(serialized);
+                //string json = await streamReader.ReadToEndAsync();
+                var registerRequest = JsonSerializer.Deserialize<RegisterRequest>(serialized);
                 UserModel um = new UserModel{
-                    UserID = Guid.Parse(registerRequest.UserID),
-                    CreationDate = DateTime.Parse(registerRequest.CreationDate),
+                    UserID = Guid.NewGuid(),
+                    CreationDate = DateTime.Now,
                     Username    =  registerRequest.Username,
                     Password    = registerRequest.Password,
                     Name = registerRequest.Name,
@@ -69,11 +69,11 @@ namespace MPKWrocław.Controllers
         }
         
         [HttpGet("getUserData")]
-        public async Task<IActionResult> GetUserData()
+        public async Task<IActionResult> GetUserData(string token_temp)
         {
             if (!verifyGuid(Request.Headers["Authorization"]))
                 return StatusCode(401);
-            return Ok(_userSingleton.getUserData(Guid.Parse(Request.Headers["Authorization"].ToString().Substring("Bearer ".Length).Trim())));
+            return Ok(_userSingleton.getUserData(Guid.Parse(token_temp)));
         }
             
         private class userSetData{
@@ -81,14 +81,14 @@ namespace MPKWrocław.Controllers
         }
 
         [HttpPost("setUserData")]
-        public async Task<IActionResult> SetUserData(String serializedData)
+        public async Task<IActionResult> SetUserData(String serializedData, string token_temp)
         {
             if (!verifyGuid(Request.Headers["Authorization"]))
                 return StatusCode(401);
             
             userSetData data = JsonSerializer.Deserialize<userSetData>(serializedData);
             var token = Guid.Parse(Request.Headers["Authorization"].ToString().Substring("Bearer ".Length).Trim());
-            _userSingleton.setUserData(token, data.Username, data.Email);
+            _userSingleton.setUserData(Guid.Parse(token_temp), data.Username, data.Email);
             return Ok();
         }
         public class ChangePassword()
@@ -125,8 +125,30 @@ namespace MPKWrocław.Controllers
                 return StatusCode(500);
             }
         }
+    
+        [HttpPost("SetUserFavorites")]
+        public async Task<IActionResult> SetUserFavourites(string favourites,string token_temp)
+        {
+            if (!verifyGuid(Request.Headers["Authorization"]))
+                return StatusCode(401);
+            //var token = Guid.Parse(Request.Headers["Authorization"].ToString().Substring("Bearer ".Length).Trim());
 
-        
+            var result = _userSingleton.updateFavorites(Guid.Parse(token_temp), favourites);
+
+            if (result)
+                return Ok();
+            return StatusCode(201);
+        }
+
+        [HttpGet("GetUserFavorites")]
+        public async Task<IActionResult> GetUserFavorites(string token_temp)
+        {
+            if (!verifyGuid(Request.Headers["Authorization"]))
+                return StatusCode(401);
+            //var token = Guid.Parse(Request.Headers["Authorization"].ToString().Substring("Bearer ".Length).Trim());
+
+            return Ok(_userSingleton.loadFavorites(Guid.Parse(token_temp)));
+        }
         bool verifyGuid(string authHeader)
         {   
             return true;
@@ -155,8 +177,6 @@ namespace MPKWrocław.Controllers
 
     public class RegisterRequest
     {
-        public string UserID{ get; set; }
-        public string CreationDate{ get; set; }
         public string Username{ get; set; }
         public string Name{ get; set; }
         public string Password{ get; set; }

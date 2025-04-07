@@ -40,8 +40,6 @@ public class UserSingleton
             var guid = Guid.NewGuid();
             context.UserLogins.Add(new UserLogin { UserID = dataModel.UserID, Token = guid, LogInDate = DateTime.Now, LogOutTime = DateTime.Now.AddDays(1),LogInDevice = logInDevice, LogInIp = logInIp });
             context.SaveChanges();
-            
-            
             return guid;
         }
         return Guid.Empty;
@@ -60,9 +58,10 @@ public class UserSingleton
     }
 
     public String getUserData(Guid token)
-    {
-        var userData = _databaseContext.UserModels.Join(
-            _databaseContext.UserLogins,
+    {   
+        using var context = _db.CreateDbContext();
+        var userData = context.UserModels.Join(
+            context.UserLogins.Where(u => u.Token == token),
             user => user.UserID, // Matching user.UserID
             login => login.UserID, // To login.UserID
             (user, login) => new
@@ -77,52 +76,74 @@ public class UserSingleton
     }
 
     public Boolean setUserData(Guid token, string username, string email)
-    {
-        var loginToken = _databaseContext.UserLogins.First(ul => ul.Token == token);
-        var userModel = _databaseContext.UserModels.First(um => um.UserID == loginToken.UserID);
-        userModel.Username = username;
-        userModel.Email = email;
-        _databaseContext.SaveChanges();
+    {   
+        using var context = _db.CreateDbContext();
+        try
+        {
+            var loginToken = context.UserLogins.First(ul => ul.Token == token);
+            var userModel = context.UserModels.First(um => um.UserID == loginToken.UserID);
+            userModel.Username = username;
+            userModel.Email = email;
+            context.SaveChanges();
+            return true;
+        }
+        catch (Exception e)
+        {
+            return false;
+        }
+    }
+
+    public bool updateFavorites(Guid token, string favorites_str)
+    {   
+        using var context = _db.CreateDbContext();
+        try
+        {
+            var favorites = JsonSerializer.Deserialize<List<string>>(favorites_str);
+
+            // Retrieve the user based on the provided token
+            var userID = context.UserLogins.First(ul => ul.Token == token);
+
+            // Remove favorites that are not in the new favorites list
+            var existingFavorites = context.UserFavourites
+                .Where(u => u.UserID == userID.UserID) // Assuming UserID is a property of UserFavourites
+                .ToList();
+
+            var favoritesToRemove = existingFavorites
+                .Where(u => !favorites.Contains(u.FavouriteID))
+                .ToList();
+
+            if (favoritesToRemove.Any())
+            {
+                context.UserFavourites.RemoveRange(favoritesToRemove);
+            }
+
+            // Add new favorites that are not already in the database
+            var favoritesToAdd = favorites
+                .Where(f => existingFavorites.All(ef => ef.FavouriteID != f))
+                .Select(f => new UserFavourite { UserID = userID.UserID, FavouriteID = f }) // Assuming UserFavourite has UserID and FavouriteID properties
+                .ToList();
+
+            if (favoritesToAdd.Any())
+            {
+                context.UserFavourites.AddRange(favoritesToAdd);
+            }
+
+            // Save changes to the database
+            context.SaveChanges();
+        }
+        catch (Exception e)
+        {
+            return false;
+        }
         return true;
     }
 
-    public static void Main()
-    {
-        DbContextOptionsBuilder<UserDataBaseContext> options = new DbContextOptionsBuilder<UserDataBaseContext>();
-        var cpath = "/Users/jakubwalica/RiderProjects/MpkWroclaw";
-        if (!Directory.Exists(cpath + "/database/sql"))
-            Directory.CreateDirectory(cpath + "/database/sql");
-        cpath += "/database/sql";
-        Console.WriteLine(cpath);
-        if (!File.Exists(cpath + "/user.sqlite"))
-            File.Create(cpath + "/user.sqlite");
-        options.UseSqlite($"Data Source={cpath}/user.sqlite");
-        UserSingleton userSingleton = new UserSingleton();
-        
-        for(int i = 0;i<1e5;i++)
-        {
-            var password = randomString(26);
-            var username = randomString(10);
-            userSingleton.AddUser(new UserModel
-            {
-                UserID = Guid.NewGuid(),
-                CreationDate = DateTime.Now,
-                Username = username,
-                Password = password,
-                Name = randomString(4),
-                Email = randomString(2)+"@"+randomString(10)+"."+randomString(3),
-            });
+    public string loadFavorites(Guid token)
+    {   
+        using var context = _db.CreateDbContext();
+        var ret = context.UserFavourites.Where(u => u.UserID == context.UserLogins.First(ul => ul.Token == token).UserID).Select(u => u.FavouriteID).ToList();
             
-            var guid = userSingleton.LoginUser(username, password, "mac", "192.168.6.232");
-            
-            var success = userSingleton.VerifyToken(guid);
-    
-            if (!success)
-            {
-                Console.WriteLine("Login Failed");
-                throw new Exception("SHIIT");
-            }
-        }
+        return JsonSerializer.Serialize(ret);
     }
 
     private static String randomString(int size)

@@ -5,6 +5,10 @@ using MPKWrocław.Models;
 
 var builder = WebApplication.CreateBuilder(args);
 
+builder.WebHost.ConfigureKestrel(options =>
+{
+    options.ListenAnyIP(5262);
+});
 // Add services to the container.
 // Learn more about configuring Swagger/OpenAPI at https://aka.ms/aspnetcore/swashbuckle
 String cpath = Path.Combine(Directory.GetCurrentDirectory(),"database","sql");
@@ -16,14 +20,7 @@ String cpath = Path.Combine(Directory.GetCurrentDirectory(),"database","sql");
     if (!Directory.Exists(cpath))
         Directory.CreateDirectory(cpath);
     
-    var dbBuilder =
-        new DbContextOptionsBuilder<MpkDatabaseContext>().UseSqlite(
-            $"Data Source={Path.Combine(cpath, "mpk.sqlite")}");
-    using (var mpk = new MpkDatabaseContext(dbBuilder.Options))
-    {
-        mpk.Database.EnsureCreated();
-        mpk.SaveChanges();
-    }
+
     // Set up the database context options
     var dbBuilder2 = new DbContextOptionsBuilder<UserDataBaseContext>()
         .UseSqlite($"Data Source={Path.Combine(cpath, "user.sqlite")}");

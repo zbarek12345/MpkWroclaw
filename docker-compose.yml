@@ -1,0 +1,11 @@
+version: '3.8'
+
+services:
+  yourapp:
+    build: .
+    container_name: mpk-wroclaw-backend
+    ports:
+      - "5262:5262"
+    environment:
+      - ASPNETCORE_ENVIRONMENT=Development
+    restart: always

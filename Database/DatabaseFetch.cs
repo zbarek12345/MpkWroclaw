@@ -115,7 +115,7 @@ namespace MPKWrocław.Database
         private readonly string _url; // URL to fetch the data from
         private readonly string _tempFolderPath = Path.Combine(Path.GetTempPath(), "GTFS");
         private readonly Timer _timer;
-        private readonly string _dbPath = Path.Combine(Directory.GetCurrentDirectory(),"Database","sql");
+        private readonly string _dbPath = Path.Combine(Directory.GetCurrentDirectory(),"database","sql");
         public DatabaseUpdater()
         {
             _url = "https://www.wroclaw.pl/open-data/87b09b32-f076-4475-8ec9-6020ed1f9ac0/OtwartyWroclaw_rozklad_jazdy_GTFS.zip";
@@ -221,10 +221,11 @@ namespace MPKWrocław.Database
             var mpkDb = new MpkDatabaseContext(dbBuilder.Options);
 
             MpkDatabaseContext.databaseLock = true;
-            while (MpkDatabaseContext.databaseInstances!=1)
-            {
-                Thread.Sleep(1000);
-            }
+            //while (MpkDatabaseContext.databaseInstances!=1)
+            //{
+            //    Console.WriteLine($"Waiting for database lock... {MpkDatabaseContext.databaseInstances}");
+            //    Thread.Sleep(1000);
+            //}
 
             mpkDb.Database.EnsureDeleted();
             mpkDb.Database.EnsureCreated();
@@ -291,9 +292,14 @@ namespace MPKWrocław.Database
                 mpkDb.SaveChanges();
                 Console.WriteLine("Stops inserted.");
 
-                // StopTimes (depends on Trips, Stops)
-                mpkDb.StopTimes.AddRange(stopTimes);
-                mpkDb.SaveChanges();
+                const int batchSize = 10000;
+                for (int i = 0; i < stopTimes.Count; i += batchSize)
+                {
+                    var batch = stopTimes.Skip(i).Take(batchSize).ToList();
+                    mpkDb.StopTimes.AddRange(batch);
+                    mpkDb.SaveChanges();
+                    Console.WriteLine($"Inserted batch {i / batchSize + 1}");
+                }
                 Console.WriteLine("StopTimes inserted.");
             }
             catch (Exception ex)
@@ -305,6 +311,16 @@ namespace MPKWrocław.Database
             }
             finally
             {
+                agencies = null;
+                routeTypes = null;
+                calendars = null;
+                shapesData = null;
+                variants = null;
+                routes = null;
+                trips = null;
+                stopTimes = null;
+                stops = null;
+
                 mpkDb.Dispose();
                 MpkDatabaseContext.databaseLock = false;
             }

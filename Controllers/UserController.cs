@@ -43,20 +43,18 @@ namespace MPKWrocław.Controllers
 
         // POST api/user/add
         [HttpPost("add")]
-        public async Task<IActionResult> AddUser(string serialized)
+        public async Task<IActionResult> AddUser([FromBody] RegisterRequest registerRequest)
         {
             try
-            {   
-                //using StreamReader streamReader = new StreamReader(serialized);
-                //string json = await streamReader.ReadToEndAsync();
-                var registerRequest = JsonSerializer.Deserialize<RegisterRequest>(serialized);
-                UserModel um = new UserModel{
+            {
+                UserModel um = new UserModel
+                {
                     UserID = Guid.NewGuid(),
                     CreationDate = DateTime.Now,
-                    Username    =  registerRequest.Username,
-                    Password    = registerRequest.Password,
+                    Username = registerRequest.Username,
+                    Password = registerRequest.Password,
                     Name = registerRequest.Name,
-                    Email     = registerRequest.Email,
+                    Email = registerRequest.Email,
                 };
                 _userSingleton.AddUser(um);
                 return Ok();
@@ -67,13 +65,28 @@ namespace MPKWrocław.Controllers
                 return StatusCode(500);
             }
         }
-        
-        [HttpGet("getUserData")]
-        public async Task<IActionResult> GetUserData(string token_temp)
+
+        [HttpGet("userData")]
+        public async Task<IActionResult> GetUserData()
         {
-            if (!verifyGuid(Request.Headers["Authorization"]))
+            var authorizationHeader = Request.Headers["Authorization"].FirstOrDefault();
+
+            if (string.IsNullOrEmpty(authorizationHeader) || !authorizationHeader.StartsWith("Bearer "))
+            {
+                return StatusCode(401, "Authorization token is missing or invalid.");
+            }
+
+            if (!verifyGuid(authorizationHeader))
                 return StatusCode(401);
-            return Ok(_userSingleton.getUserData(Guid.Parse(token_temp)));
+
+            var token = authorizationHeader.Substring("Bearer ".Length).Trim();
+
+            if (!Guid.TryParse(token, out var parsedToken))
+            {
+                return StatusCode(401, "Invalid token format.");
+            }
+
+            return Ok(_userSingleton.getUserData(parsedToken));
         }
             
         private class userSetData{
@@ -129,9 +142,22 @@ namespace MPKWrocław.Controllers
         [HttpPost("SetUserFavorites")]
         public async Task<IActionResult> SetUserFavourites(string favourites,string token_temp)
         {
-            if (!verifyGuid(Request.Headers["Authorization"]))
+            var authorizationHeader = Request.Headers["Authorization"].FirstOrDefault();
+
+            if (string.IsNullOrEmpty(authorizationHeader) || !authorizationHeader.StartsWith("Bearer "))
+            {
+                return StatusCode(401, "Authorization token is missing or invalid.");
+            }
+
+            if (!verifyGuid(authorizationHeader))
                 return StatusCode(401);
-            //var token = Guid.Parse(Request.Headers["Authorization"].ToString().Substring("Bearer ".Length).Trim());
+
+            var token = authorizationHeader.Substring("Bearer ".Length).Trim();
+
+            if (!Guid.TryParse(token, out var parsedToken))
+            {
+                return StatusCode(401, "Invalid token format.");
+            }
 
             var result = _userSingleton.updateFavorites(Guid.Parse(token_temp), favourites);
 
@@ -140,15 +166,61 @@ namespace MPKWrocław.Controllers
             return StatusCode(201);
         }
 
-        [HttpGet("GetUserFavorites")]
-        public async Task<IActionResult> GetUserFavorites(string token_temp)
+        private bool TryGetToken(out Guid token)
         {
-            if (!verifyGuid(Request.Headers["Authorization"]))
-                return StatusCode(401);
-            //var token = Guid.Parse(Request.Headers["Authorization"].ToString().Substring("Bearer ".Length).Trim());
+            token = Guid.Empty;
+            var authHeader = Request.Headers["Authorization"].FirstOrDefault();
+            if (string.IsNullOrEmpty(authHeader) || !authHeader.StartsWith("Bearer "))
+                return false;
 
-            return Ok(_userSingleton.loadFavorites(Guid.Parse(token_temp)));
+            var tokenStr = authHeader.Substring("Bearer ".Length).Trim();
+            if (!Guid.TryParse(tokenStr, out token) || !_userSingleton.VerifyToken(token))
+                return false;
+
+            return true;
         }
+
+        [HttpGet("favorites")]
+        public IActionResult GetFavorites()
+        {
+            if (!TryGetToken(out var token))
+                return Unauthorized("Authorization token is missing or invalid.");
+
+            var favoritesJson = _userSingleton.loadFavorites(token);
+            return Ok(favoritesJson);
+        }
+
+        public class FavoriteDto
+        {
+            public string FavoriteId { get; set; }
+        }
+
+        [HttpPost("favorites")]
+        public IActionResult AddFavorite([FromBody] FavoriteDto dto)
+        {
+            if (!TryGetToken(out var token))
+                return Unauthorized("Authorization token is missing or invalid.");
+
+            var result = _userSingleton.addFavorite(token, dto.FavoriteId);
+            if (!result)
+                return Conflict("Favorite already exists or failed to add.");
+
+            return Ok("Favorite added successfully.");
+        }
+
+        [HttpDelete("favorites/{favoriteId}")]
+        public IActionResult DeleteFavorite(string favoriteId)
+        {
+            if (!TryGetToken(out var token))
+                return Unauthorized("Authorization token is missing or invalid.");
+
+            var result = _userSingleton.deleteFavorite(token, favoriteId);
+            if (!result)
+                return NotFound("Favorite not found or failed to delete.");
+
+            return Ok("Favorite deleted successfully.");
+        }
+
         bool verifyGuid(string authHeader)
         {   
             return true;

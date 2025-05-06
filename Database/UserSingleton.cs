@@ -71,7 +71,7 @@ public class UserSingleton
                 login.LogInDate,
                 login.LogInDevice
             }
-        );
+        ).FirstOrDefault();
         return JsonSerializer.Serialize(userData);
     }
 
@@ -144,6 +144,65 @@ public class UserSingleton
         var ret = context.UserFavourites.Where(u => u.UserID == context.UserLogins.First(ul => ul.Token == token).UserID).Select(u => u.FavouriteID).ToList();
             
         return JsonSerializer.Serialize(ret);
+    }
+
+    public bool addFavorite(Guid token, string favoriteId)
+    {
+        using var context = _db.CreateDbContext();
+        try
+        {
+            var userID = context.UserLogins.First(ul => ul.Token == token).UserID;
+
+            // Check if the favorite already exists for the user
+            var existingFavorite = context.UserFavourites
+                .FirstOrDefault(uf => uf.UserID == userID && uf.FavouriteID == favoriteId);
+
+            if (existingFavorite == null)
+            {
+                context.UserFavourites.Add(new UserFavourite
+                {
+                    UserID = userID,
+                    FavouriteID = favoriteId
+                });
+                context.SaveChanges();
+                return true; // Successfully added
+            }
+            else
+            {
+                return false; // Favorite already exists
+            }
+        }
+        catch (Exception e)
+        {
+            return false; // Error while adding favorite
+        }
+    }
+
+    public bool deleteFavorite(Guid token, string favoriteId)
+    {
+        using var context = _db.CreateDbContext();
+        try
+        {
+            var userID = context.UserLogins.First(ul => ul.Token == token).UserID;
+
+            var favoriteToDelete = context.UserFavourites
+                .FirstOrDefault(uf => uf.UserID == userID && uf.FavouriteID == favoriteId);
+
+            if (favoriteToDelete != null)
+            {
+                context.UserFavourites.Remove(favoriteToDelete);
+                context.SaveChanges();
+                return true; // Successfully deleted
+            }
+            else
+            {
+                return false; // Favorite not found
+            }
+        }
+        catch (Exception e)
+        {
+            return false; // Error while deleting favorite
+        }
     }
 
     private static String randomString(int size)

@@ -221,10 +221,11 @@ namespace MPKWrocław.Database
             var mpkDb = new MpkDatabaseContext(dbBuilder.Options);
 
             MpkDatabaseContext.databaseLock = true;
-            while (MpkDatabaseContext.databaseInstances!=1)
-            {
-                Thread.Sleep(1000);
-            }
+            //while (MpkDatabaseContext.databaseInstances!=1)
+            //{
+            //    Console.WriteLine($"Waiting for database lock... {MpkDatabaseContext.databaseInstances}");
+            //    Thread.Sleep(1000);
+            //}
 
             mpkDb.Database.EnsureDeleted();
             mpkDb.Database.EnsureCreated();
@@ -291,9 +292,14 @@ namespace MPKWrocław.Database
                 mpkDb.SaveChanges();
                 Console.WriteLine("Stops inserted.");
 
-                // StopTimes (depends on Trips, Stops)
-                mpkDb.StopTimes.AddRange(stopTimes);
-                mpkDb.SaveChanges();
+                const int batchSize = 10000;
+                for (int i = 0; i < stopTimes.Count; i += batchSize)
+                {
+                    var batch = stopTimes.Skip(i).Take(batchSize).ToList();
+                    mpkDb.StopTimes.AddRange(batch);
+                    mpkDb.SaveChanges();
+                    Console.WriteLine($"Inserted batch {i / batchSize + 1}");
+                }
                 Console.WriteLine("StopTimes inserted.");
             }
             catch (Exception ex)
